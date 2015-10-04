@@ -1,7 +1,7 @@
 <fragment xmlns:android="http://schemas.android.com/apk/res/android"
           xmlns:tools="http://schemas.android.com/tools"
           android:id="@+id/fragment"
-          android:name="de.dastuhl.hours.SessionListActivityFragment"
-          tools:layout="@layout/fragment_session_list"
+          android:name="de.dastuhl.hours.EditSessionActivityFragment"
+          tools:layout="@layout/fragment_edit_session"
           android:layout_width="match_parent"
           android:layout_height="match_parent"/>

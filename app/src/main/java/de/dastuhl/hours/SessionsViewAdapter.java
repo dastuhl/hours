@@ -23,7 +23,7 @@ public class SessionsViewAdapter extends FirebaseRecyclerViewAdapter<Session, Se
     @Override
     public void populateViewHolder(SessionListViewHolder pSessionListViewHolder, Session pSession) {
 
-        pSessionListViewHolder.date.setText(pSession.getDate());
+        pSessionListViewHolder.date.setText(pSession.createTimerangeString());
         pSessionListViewHolder.athletic.setText(String.valueOf(pSession.getAthleticDuration()));
         pSessionListViewHolder.swimming.setText(String.valueOf(pSession.getSwimDuration()));
         pSessionListViewHolder.cycling.setText(String.valueOf(pSession.getCycleDuration()));

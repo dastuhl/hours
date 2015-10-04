@@ -11,12 +11,7 @@ import de.dastuhl.hours.LoginActivity;
 /**
  * Created by Martin on 24.09.2015.
  */
-public class HoursFirebaseHelper {
-
-    public static final String BASIC_REF = "https://dastuhl-hours.firebaseio.com/";
-    public static final String SPORT_TYPES_CHILD = "sporttypes/";
-    public static final String SESSIONS_CHILD = "sessions";
-    public static final String USERS_CHILD = "users";
+public class HoursFirebaseLoginHelper {
 
     public static final String USER_ATTRIBUTE_EMAIL = "email";
     public static final String USER_ATTRIBUTE_DISPLAY_NAME = "displayName";
@@ -24,12 +19,13 @@ public class HoursFirebaseHelper {
     public static final String AUTH_DATA_EMAIL = "email";
     public static final String AUTH_DATA_DISPLAY_NAME = "displayName";
 
-    private HoursFirebaseHelper() {
+    private HoursFirebaseLoginHelper() {
 
     }
 
-    public static AuthData setupUserAuth(Firebase ref, Context context) {
+    public static AuthData setupUserAuth(Context context) {
 
+        Firebase ref = HoursFirebaseConnector.getBasicRef();
         if (ref != null && ref.getAuth() != null && ref.getAuth().getUid() != null) {
             // vorhandene login Daten verwenden
             return ref.getAuth();
@@ -39,5 +35,10 @@ public class HoursFirebaseHelper {
             context.startActivity(loginIntent);
         }
         return null;
+    }
+
+    public static void logoutFirebase(Context context) {
+        HoursFirebaseConnector.getBasicRef().unauth();
+        setupUserAuth(context);
     }
 }

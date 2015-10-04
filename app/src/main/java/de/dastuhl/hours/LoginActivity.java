@@ -21,7 +21,8 @@ import java.util.Map;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import de.dastuhl.hours.data.HoursFirebaseHelper;
+import de.dastuhl.hours.data.HoursFirebaseConnector;
+import de.dastuhl.hours.data.HoursFirebaseLoginHelper;
 
 
 public class LoginActivity extends ActionBarActivity {
@@ -39,6 +40,8 @@ public class LoginActivity extends ActionBarActivity {
 
     private AuthData authenticatedUser;
 
+    private HoursFirebaseConnector firebaseConnector;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,7 +49,7 @@ public class LoginActivity extends ActionBarActivity {
 
         ButterKnife.bind(this);
 
-        authRef = new Firebase(HoursFirebaseHelper.BASIC_REF);
+        authRef = HoursFirebaseConnector.getBasicRef();
 
         mAuthStateListener = new Firebase.AuthStateListener() {
             @Override
@@ -102,7 +105,7 @@ public class LoginActivity extends ActionBarActivity {
 
         mAuthProgressDialog = new ProgressDialog(this);
         mAuthProgressDialog.setTitle("Loading");
-        mAuthProgressDialog.setMessage("Authenticating with Firebase...");
+        mAuthProgressDialog.setMessage("Authenticating...");
         mAuthProgressDialog.setCancelable(false);
         mAuthProgressDialog.show();
 
@@ -112,13 +115,14 @@ public class LoginActivity extends ActionBarActivity {
             public void onAuthenticated(AuthData authData) {
                 Map<String, String> map = new HashMap<String, String>();
                 map.put("provider", authData.getProvider());
-                if(authData.getProviderData().containsKey(HoursFirebaseHelper.AUTH_DATA_DISPLAY_NAME)) {
-                    map.put(HoursFirebaseHelper.USER_ATTRIBUTE_DISPLAY_NAME, authData.getProviderData().get(HoursFirebaseHelper.AUTH_DATA_DISPLAY_NAME).toString());
+                HoursFirebaseConnector connector = new HoursFirebaseConnector(authData.getUid(), LoginActivity.this);
+                if(authData.getProviderData().containsKey(HoursFirebaseLoginHelper.AUTH_DATA_DISPLAY_NAME)) {
+                    map.put(HoursFirebaseLoginHelper.USER_ATTRIBUTE_DISPLAY_NAME, authData.getProviderData().get(HoursFirebaseLoginHelper.AUTH_DATA_DISPLAY_NAME).toString());
                 }
-                if (authData.getProviderData().containsKey(HoursFirebaseHelper.AUTH_DATA_EMAIL)) {
-                    map.put(HoursFirebaseHelper.USER_ATTRIBUTE_EMAIL, authData.getProviderData().get(HoursFirebaseHelper.AUTH_DATA_EMAIL).toString());
+                if (authData.getProviderData().containsKey(HoursFirebaseLoginHelper.AUTH_DATA_EMAIL)) {
+                    map.put(HoursFirebaseLoginHelper.USER_ATTRIBUTE_EMAIL, authData.getProviderData().get(HoursFirebaseLoginHelper.AUTH_DATA_EMAIL).toString());
                 }
-                authRef.child(HoursFirebaseHelper.USERS_CHILD).child(authData.getUid()).setValue(map);
+                connector.getUserRef().setValue(map);
             }
 
             @Override
@@ -136,6 +140,7 @@ public class LoginActivity extends ActionBarActivity {
                     default:
                         resId = R.string.login_not_succesful;
                 }
+                mAuthProgressDialog.hide();
                 Toast.makeText(LoginActivity.this, resId, Toast.LENGTH_SHORT).show();
             }
         });
@@ -154,7 +159,7 @@ public class LoginActivity extends ActionBarActivity {
 
     public void setAuthenticatedUser(AuthData pAuthenticatedUser) {
         if (pAuthenticatedUser != null) {
-            Intent sessionListIntent = new Intent(this, SessionListActivity.class);
+            Intent sessionListIntent = new Intent(this, MainActivity.class);
             sessionListIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(sessionListIntent);
         }
