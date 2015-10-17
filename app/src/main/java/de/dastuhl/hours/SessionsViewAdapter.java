@@ -8,26 +8,26 @@ import com.firebase.ui.FirebaseRecyclerViewAdapter;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import de.dastuhl.hours.data.Session;
+import de.dastuhl.hours.data.model.SessionsSummary;
 
 /**
  * Created by Martin on 24.09.2015.
  */
-public class SessionsViewAdapter extends FirebaseRecyclerViewAdapter<Session, SessionsViewAdapter.SessionListViewHolder> {
+public class SessionsViewAdapter extends FirebaseRecyclerViewAdapter<SessionsSummary, SessionsViewAdapter.SessionListViewHolder> {
 
 
-    public SessionsViewAdapter(Class<Session> modelClass, int modelLayout, Class<SessionListViewHolder> viewHolderClass, Firebase ref) {
+    public SessionsViewAdapter(Class<SessionsSummary> modelClass, int modelLayout, Class<SessionListViewHolder> viewHolderClass, Firebase ref) {
         super(modelClass, modelLayout, viewHolderClass, ref);
     }
 
     @Override
-    public void populateViewHolder(SessionListViewHolder pSessionListViewHolder, Session pSession) {
+    public void populateViewHolder(SessionListViewHolder pSessionListViewHolder, SessionsSummary pSessionsSummary) {
 
-        pSessionListViewHolder.date.setText(pSession.createTimerangeString());
-        pSessionListViewHolder.athletic.setText(String.valueOf(pSession.getAthleticDuration()));
-        pSessionListViewHolder.swimming.setText(String.valueOf(pSession.getSwimDuration()));
-        pSessionListViewHolder.cycling.setText(String.valueOf(pSession.getCycleDuration()));
-        pSessionListViewHolder.running.setText(String.valueOf(pSession.getRunDuration()));
+        pSessionListViewHolder.date.setText(pSessionsSummary.createTimerangeString());
+        pSessionListViewHolder.athletic.setText(String.valueOf(pSessionsSummary.getAthleticDuration()));
+        pSessionListViewHolder.swimming.setText(String.valueOf(pSessionsSummary.getSwimDuration()));
+        pSessionListViewHolder.cycling.setText(String.valueOf(pSessionsSummary.getCycleDuration()));
+        pSessionListViewHolder.running.setText(String.valueOf(pSessionsSummary.getRunDuration()));
     }
 
     static class SessionListViewHolder extends android.support.v7.widget.RecyclerView.ViewHolder implements View.OnClickListener{

@@ -25,7 +25,9 @@ import java.util.Calendar;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import de.dastuhl.hours.data.Session;
+import de.dastuhl.hours.data.model.DailySessionsSummary;
+import de.dastuhl.hours.data.model.SessionsSummary;
+import de.dastuhl.hours.data.model.SessionsSummaryFactory;
 
 
 /**
@@ -91,11 +93,12 @@ public class EditSessionActivityFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.menu_action_done:
                 Intent data = new Intent();
-                data.putExtra(RESULT_SESSION, new Session(sessionDate,
+                SessionsSummary dailySummary = SessionsSummaryFactory.INSTANCE.createDailySessionsSummary(sessionDate,
                         durationSwim == null ? 0 : durationSwim,
                         durationCycle == null ? 0 : durationCycle,
                         durationRun == null ? 0 : durationRun,
-                        durationAthletic == null ? 0 : durationAthletic));
+                        durationAthletic == null ? 0 : durationAthletic);
+                data.putExtra(RESULT_SESSION, dailySummary);
                 getActivity().setResult(Activity.RESULT_OK, data);
                 getActivity().finish();
                 return true;

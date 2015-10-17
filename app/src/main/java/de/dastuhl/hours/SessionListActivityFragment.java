@@ -18,7 +18,12 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.dastuhl.hours.data.HoursFirebaseConnector;
 import de.dastuhl.hours.data.HoursFirebaseLoginHelper;
-import de.dastuhl.hours.data.Session;
+import de.dastuhl.hours.data.model.DailySessionsSummary;
+import de.dastuhl.hours.data.model.MonthlySessionsSummary;
+import de.dastuhl.hours.data.model.SessionsSummary;
+import de.dastuhl.hours.data.model.SessionsSummaryFactory;
+import de.dastuhl.hours.data.model.WeeklySessionsSummary;
+import de.dastuhl.hours.data.model.YearlySessionsSummary;
 
 
 /**
@@ -66,23 +71,32 @@ public class SessionListActivityFragment extends Fragment implements MainActivit
     }
 
     private void initializeAdapter(int section) {
+        if (firebaseConnector == null) {
+            return;
+        }
+
         Firebase ref = null;
+        Class clazz = null;
         switch (section) {
             case NavigationDrawerFragment.LIST_TYPE_DAYS:
-                ref = firebaseConnector.getUserSessionsRef();
+                ref = firebaseConnector.getUserDailySummaries();
+                clazz = DailySessionsSummary.class;
                 break;
             case NavigationDrawerFragment.LIST_TYPE_WEEKS:
                 ref = firebaseConnector.getUserWeeklySummaries();
+                clazz = WeeklySessionsSummary.class;
                 break;
             case NavigationDrawerFragment.LIST_TYPE_MONTHS:
                 ref = firebaseConnector.getUserMonthlySummaries();
+                clazz = MonthlySessionsSummary.class;
                 break;
             case NavigationDrawerFragment.LIST_TYPE_YEARS:
                 ref = firebaseConnector.getUserYearlySummaries();
+                clazz = YearlySessionsSummary.class;
                 break;
         }
         if(ref != null) {
-            adapter = new SessionsViewAdapter(Session.class, R.layout.list_item_session, SessionsViewAdapter.SessionListViewHolder.class, ref);
+            adapter = new SessionsViewAdapter(clazz, R.layout.list_item_session, SessionsViewAdapter.SessionListViewHolder.class, ref);
             sessionListView.setAdapter(adapter);
         }
     }
@@ -114,8 +128,9 @@ public class SessionListActivityFragment extends Fragment implements MainActivit
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
                 case NEW_SESSION_REQUEST_CODE:
-                    Session newSession = data.getParcelableExtra(EditSessionActivityFragment.RESULT_SESSION);
-                    firebaseConnector.saveSession(newSession);
+                    SessionsSummary newSessionsSummary = data.getParcelableExtra(EditSessionActivityFragment.RESULT_SESSION);
+                    DailySessionsSummary dailySessionsSummary = SessionsSummaryFactory.INSTANCE.createDailySessionsSummary(newSessionsSummary);
+                    firebaseConnector.saveDailySummary(dailySessionsSummary);
                     break;
             }
         }

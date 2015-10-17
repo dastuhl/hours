@@ -1,4 +1,4 @@
-package de.dastuhl.hours.data;
+package de.dastuhl.hours.data.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -8,7 +8,11 @@ import java.util.Calendar;
 /**
  * Created by Martin on 24.09.2015.
  */
-public class Session implements Parcelable {
+public class SessionsSummary implements Parcelable {
+
+    public static final String WEEK_PROPERTY = "weekOfYear";
+    public static final String MONTH_PROPERTY = "month";
+    public static final String YEAR_PROPERTY = "year";
 
     // yyyy/mm/dd for day-session, yyyy/mm for monthly summary, yyyy for yearly summary, yyyy-weekNr for weekly summary
     private Integer year;
@@ -20,25 +24,36 @@ public class Session implements Parcelable {
     private Integer runDuration;
     private Integer athleticDuration;
 
-    public Session() {
+    public SessionsSummary() {
 
     }
 
-    public Session(Calendar sessionDate, Integer pSwimDuration, Integer pCycleDuration, Integer pRunDuration, Integer pAthleticDuration) {
-        this(sessionDate.get(Calendar.YEAR), sessionDate.get(Calendar.MONTH) + 1, sessionDate.get(Calendar.WEEK_OF_YEAR), sessionDate.get(Calendar.DAY_OF_MONTH),
-                pSwimDuration, pCycleDuration, pRunDuration, pAthleticDuration);
+    public SessionsSummary(Integer pYear, Integer pMonth, Integer pWeekOfYear, Integer pDayOfMonth,
+                           Integer pSwimDuration, Integer pCycleDuration, Integer pRunDuration, Integer pAthleticDuration) {
+        this.athleticDuration = pAthleticDuration;
+        this.cycleDuration = pCycleDuration;
+        this.runDuration = pRunDuration;
+        this.swimDuration = pSwimDuration;
+        this.dayOfMonth = pDayOfMonth;
+        this.weekOfYear = pWeekOfYear;
+        this.month = pMonth;
+        this.year = pYear;
     }
 
-    public Session(Integer pYear, Integer pMonth, Integer pWeekOfYear, Integer pDayOfMonth,
-                   Integer pSwimDuration, Integer pCycleDuration, Integer pRunDuration, Integer pAthleticDuration) {
-        year = pYear;
-        month = pMonth;
-        weekOfYear = pWeekOfYear;
-        dayOfMonth = pDayOfMonth;
-        swimDuration = pSwimDuration;
-        cycleDuration = pCycleDuration;
-        runDuration = pRunDuration;
-        athleticDuration = pAthleticDuration;
+    public void setDayOfMonth(Integer dayOfMonth) {
+        this.dayOfMonth = dayOfMonth;
+    }
+
+    public void setMonth(Integer month) {
+        this.month = month;
+    }
+
+    public void setWeekOfYear(Integer weekOfYear) {
+        this.weekOfYear = weekOfYear;
+    }
+
+    public void setYear(Integer year) {
+        this.year = year;
     }
 
     public Integer getYear() {
@@ -90,20 +105,7 @@ public class Session implements Parcelable {
     }
 
     public String createTimerangeString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append(year);
-        if (dayOfMonth != null && dayOfMonth.intValue() > 0) {
-            builder.append("-").append(twoFigure(month)).append("-").append(twoFigure(dayOfMonth));
-        } else if (weekOfYear != null && weekOfYear.intValue() > 0) {
-            builder.append("-").append(twoFigure(weekOfYear));
-        } else if (month != null && month.intValue() > 0) {
-            builder.append("-").append(twoFigure(month));
-        }
-        String result = builder.toString();
-        if (result.length() != 10) {
-            throw new IllegalStateException("ungültiges Datum " + result);
-        }
-        return result;
+        return "";
     }
 
     public Long createPriority() {
@@ -112,17 +114,16 @@ public class Session implements Parcelable {
         return Long.valueOf(prio) * -1;
     }
 
-    private String twoFigure(int number) {
+    protected String twoFigure(int number) {
         String str = "00";
         String numberString = String.valueOf(number);
         return (str + numberString).substring(numberString.length());
     }
 
-
     /*
      * Parcelable
      */
-    public Session (Parcel in) {
+    public SessionsSummary(Parcel in) {
         this.year = in.readInt();
         this.month = in.readInt();
         this.weekOfYear = in.readInt();
@@ -164,14 +165,14 @@ public class Session implements Parcelable {
         dest.writeInt(this.runDuration);
     }
 
-    public static final Parcelable.Creator<Session> CREATOR
-            = new Parcelable.Creator<Session>() {
-        public Session createFromParcel(Parcel in) {
-            return new Session(in);
+    public static final Parcelable.Creator<SessionsSummary> CREATOR
+            = new Parcelable.Creator<SessionsSummary>() {
+        public SessionsSummary createFromParcel(Parcel in) {
+            return new SessionsSummary(in);
         }
 
-        public Session[] newArray(int size) {
-            return new Session[size];
+        public SessionsSummary[] newArray(int size) {
+            return new SessionsSummary[size];
         }
     };
 }
