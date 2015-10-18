@@ -30,6 +30,7 @@ android {
 
 repositories {
     mavenCentral()
+    maven { url "https://jitpack.io" }
 }
 
 dependencies {
@@ -41,4 +42,5 @@ dependencies {
     compile 'com.firebaseui:firebase-ui:0.2.0'
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.android.support:design:22.2.0'
+    compile 'com.github.PhilJay:MPAndroidChart:v2.1.5'
 }

@@ -18,9 +18,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
+        android:layout_gravity="right|bottom"
         android:clickable="true"
-        android:src="@drawable/ic_add_circle_outline_black_24dp"
-        app:layout_anchor="@id/listview_sessions"
-        app:layout_anchorGravity="bottom|right|end"/>
+        app:fabSize="normal"
+        android:src="@drawable/ic_add_circle_outline_black_48dp"
+        />
 
 </FrameLayout>

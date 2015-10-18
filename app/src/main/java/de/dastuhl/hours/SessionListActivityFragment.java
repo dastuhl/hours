@@ -113,7 +113,7 @@ public class SessionListActivityFragment extends Fragment implements MainActivit
                 break;
         }
         if(ref != null) {
-            adapter = new SessionsViewAdapter(clazz, R.layout.list_item_session, SessionsViewAdapter.SessionListViewHolder.class, ref);
+            adapter = new SessionsViewAdapter(clazz, R.layout.list_item_session_chart, SessionsViewAdapter.SessionListViewHolder.class, ref);
             sessionListView.setAdapter(adapter);
         }
     }

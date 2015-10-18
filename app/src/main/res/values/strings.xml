@@ -31,5 +31,7 @@
     <string name="Minutes">Minutes</string>
     <string name="action_done">d</string>
     <string name="action_cancel">c</string>
+    <string name="done">Done</string>
+    <string name="cancel">Cancel</string>
 
 </resources>

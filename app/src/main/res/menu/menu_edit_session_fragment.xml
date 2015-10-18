@@ -2,12 +2,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/menu_action_done"
-          android:title="@string/action_done"
+          android:icon="@drawable/ic_check_black_24dp"
           android:orderInCategory="100"
-          app:showAsAction="ifRoom"/>
+          app:showAsAction="ifRoom"
+          android:title="@string/done" />
     <item android:id="@+id/action_cancel"
-          android:title="@string/action_cancel"
+          android:icon="@drawable/ic_cancel_black_24dp"
           android:orderInCategory="200"
-          app:showAsAction="ifRoom"/>
+          app:showAsAction="ifRoom"
+          android:title="@string/cancel" />
 
 </menu>
