@@ -3,6 +3,8 @@ package de.dastuhl.hours.data.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.Calendar;
+
 /**
  * Created by Martin on 24.09.2015.
  */
@@ -16,6 +18,17 @@ public class DailySessionsSummary extends SessionsSummary {
                                 Integer pDayOfYear, Integer pSwimDuration, Integer pCycleDuration,
                                 Integer pRunDuration, Integer pAthleticDuration) {
         super(pYear, pMonth,  pWeekOfYear, pDayOfYear, pSwimDuration, pCycleDuration, pRunDuration, pAthleticDuration);
+    }
+
+    public DailySessionsSummary(Calendar sessionDate, Integer pSwimDuration, Integer pCycleDuration,
+                                Integer pRunDuration, Integer pAthleticDuration) {
+        this(sessionDate.get(Calendar.YEAR), sessionDate.get(Calendar.MONTH) + 1, sessionDate.get(Calendar.WEEK_OF_YEAR), sessionDate.get(Calendar.DAY_OF_MONTH),
+                pSwimDuration, pCycleDuration, pRunDuration, pAthleticDuration);
+    }
+
+    public static DailySessionsSummary fromSessionsSummary(SessionsSummary summary) {
+        return new DailySessionsSummary(summary.getYear(), summary.getMonth(), summary.getWeekOfYear(), summary.getDayOfMonth(),
+                summary.getSwimDuration(), summary.getCycleDuration(), summary.getRunDuration(), summary.getAthleticDuration());
     }
 
     public String createTimerangeString() {

@@ -15,7 +15,6 @@ import java.util.Map;
 import de.dastuhl.hours.data.model.DailySessionsSummary;
 import de.dastuhl.hours.data.model.MonthlySessionsSummary;
 import de.dastuhl.hours.data.model.SessionsSummary;
-import de.dastuhl.hours.data.model.SessionsSummaryFactory;
 import de.dastuhl.hours.data.model.WeeklySessionsSummary;
 import de.dastuhl.hours.data.model.YearlySessionsSummary;
 
@@ -34,7 +33,7 @@ public class HoursFirebaseConnector {
     private String userID;
     private Context context;
 
-    private boolean listenerInitialized = false;
+    private boolean summariesInitialized = false;
 
     private Firebase userSessionsRef;
     private Firebase userWeeklySummaries;
@@ -45,7 +44,6 @@ public class HoursFirebaseConnector {
     public HoursFirebaseConnector (String userId, Context context) {
         this.userID = userId;
         this.context = context;
-        initSessionsListener();
     }
 
     public static Firebase getBasicRef() {
@@ -68,12 +66,12 @@ public class HoursFirebaseConnector {
         return userSessionsRef;
     }
 
-    public void initSessionsListener() {
+    public void initSessionsListener(final boolean initCumulatedSummaries) {
         // for incremental operations on the date
         getUserDailySummaries().addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                if (listenerInitialized) {
+                if (summariesInitialized) {
                     updateSummaries(dataSnapshot.getValue(SessionsSummary.class));
                 }
             }
@@ -99,7 +97,7 @@ public class HoursFirebaseConnector {
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                if (listenerInitialized) {
+                if (summariesInitialized) {
                     updateSummaries(dataSnapshot.getValue(SessionsSummary.class));
                 }
             }
@@ -124,8 +122,10 @@ public class HoursFirebaseConnector {
         getUserDailySummaries().addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                updateSummaries(dataSnapshot);
-                listenerInitialized = true;
+                if (initCumulatedSummaries) {
+                    updateSummaries(dataSnapshot);
+                }
+                summariesInitialized = true;
             }
 
             @Override
@@ -201,7 +201,7 @@ public class HoursFirebaseConnector {
 
         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
             SessionsSummary summary = snapshot.getValue(SessionsSummary.class);
-            DailySessionsSummary dailySummary = SessionsSummaryFactory.INSTANCE.createDailySessionsSummary(summary);
+            DailySessionsSummary dailySummary = DailySessionsSummary.fromSessionsSummary(summary);
             String yearlyKey = dailySummary.createKeyForYearlySummary();
             String monthlyKey = dailySummary.createKeyForMonthlySummary();
             String weeklyKey = dailySummary.createKeyForWeeklySummary();
@@ -209,21 +209,21 @@ public class HoursFirebaseConnector {
             if (weeklySummaries.containsKey(weeklyKey)) {
                 weeklySummaries.get(weeklyKey).addSessionDurations(dailySummary);
             } else {
-                WeeklySessionsSummary weeklySummary = SessionsSummaryFactory.INSTANCE.createWeeklySessionsSummary(dailySummary);
+                WeeklySessionsSummary weeklySummary = WeeklySessionsSummary.fromDailySessionsSummary(dailySummary);
                 weeklySummaries.put(weeklyKey, weeklySummary);
             }
 
             if (monthlySummaries.containsKey(monthlyKey)) {
                 monthlySummaries.get(monthlyKey).addSessionDurations(dailySummary);
             } else {
-                MonthlySessionsSummary monthlySummary = SessionsSummaryFactory.INSTANCE.createMonthlySessionsSummary(dailySummary);
+                MonthlySessionsSummary monthlySummary = MonthlySessionsSummary.fromDailySessionsSummary(dailySummary);
                 monthlySummaries.put(monthlyKey, monthlySummary);
             }
 
             if (yearlySummaries.containsKey(yearlyKey)) {
                 yearlySummaries.get(yearlyKey).addSessionDurations(dailySummary);
             } else {
-                YearlySessionsSummary yearlySummary = SessionsSummaryFactory.INSTANCE.createYearlySessionsSummary(dailySummary);
+                YearlySessionsSummary yearlySummary = YearlySessionsSummary.fromDailySessionsSummary(dailySummary);
                 yearlySummaries.put(yearlyKey, yearlySummary);
             }
         }
@@ -231,5 +231,9 @@ public class HoursFirebaseConnector {
         saveWeeklySummaries(weeklySummaries.values());
         saveMonthlySummaries(monthlySummaries.values());
         saveYearlySummaries(yearlySummaries.values());
+    }
+
+    public boolean isSummariesInitialized() {
+        return summariesInitialized;
     }
 }

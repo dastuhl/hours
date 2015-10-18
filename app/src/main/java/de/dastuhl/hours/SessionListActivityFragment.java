@@ -21,7 +21,6 @@ import de.dastuhl.hours.data.HoursFirebaseLoginHelper;
 import de.dastuhl.hours.data.model.DailySessionsSummary;
 import de.dastuhl.hours.data.model.MonthlySessionsSummary;
 import de.dastuhl.hours.data.model.SessionsSummary;
-import de.dastuhl.hours.data.model.SessionsSummaryFactory;
 import de.dastuhl.hours.data.model.WeeklySessionsSummary;
 import de.dastuhl.hours.data.model.YearlySessionsSummary;
 
@@ -30,6 +29,8 @@ import de.dastuhl.hours.data.model.YearlySessionsSummary;
  * A placeholder fragment containing a simple view.
  */
 public class SessionListActivityFragment extends Fragment implements MainActivity.SessionListCallback {
+
+    private static final String CUMULATION_INITIALIZED = "CumInitialized";
 
     /**
      * The fragment argument representing the section number for this
@@ -64,10 +65,26 @@ public class SessionListActivityFragment extends Fragment implements MainActivit
         authUser = HoursFirebaseLoginHelper.setupUserAuth(getActivity());
         if (authUser != null && authUser.getUid() != null) {
             firebaseConnector = new HoursFirebaseConnector(authUser.getUid(), getActivity());
+            boolean doInit;
+            if (savedInstanceState != null && savedInstanceState.containsKey(CUMULATION_INITIALIZED)) {
+                doInit = !savedInstanceState.getBoolean(CUMULATION_INITIALIZED);
+            } else {
+                doInit = true;
+            }
+            firebaseConnector.initSessionsListener(doInit);
             initializeAdapter(section);
         }
 
         return rootView;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        if (firebaseConnector != null) {
+            outState.putBoolean(CUMULATION_INITIALIZED, firebaseConnector.isSummariesInitialized());
+        }
     }
 
     private void initializeAdapter(int section) {
@@ -129,7 +146,7 @@ public class SessionListActivityFragment extends Fragment implements MainActivit
             switch (requestCode) {
                 case NEW_SESSION_REQUEST_CODE:
                     SessionsSummary newSessionsSummary = data.getParcelableExtra(EditSessionActivityFragment.RESULT_SESSION);
-                    DailySessionsSummary dailySessionsSummary = SessionsSummaryFactory.INSTANCE.createDailySessionsSummary(newSessionsSummary);
+                    DailySessionsSummary dailySessionsSummary = DailySessionsSummary.fromSessionsSummary(newSessionsSummary);
                     firebaseConnector.saveDailySummary(dailySessionsSummary);
                     break;
             }

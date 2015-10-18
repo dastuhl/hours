@@ -11,10 +11,15 @@ public class MonthlySessionsSummary extends CumulatedSessionsSummary {
     public MonthlySessionsSummary() {
 
     }
-    public MonthlySessionsSummary(Integer pYear, Integer pMonth, Integer pWeekOfYear,
+    private MonthlySessionsSummary(Integer pYear, Integer pMonth, Integer pWeekOfYear,
                                 Integer pDayOfYear, Integer pSwimDuration, Integer pCycleDuration,
                                 Integer pRunDuration, Integer pAthleticDuration) {
         super(pYear, pMonth,  pWeekOfYear, pDayOfYear, pSwimDuration, pCycleDuration, pRunDuration, pAthleticDuration);
+    }
+
+    public static MonthlySessionsSummary fromDailySessionsSummary(DailySessionsSummary dailySummary) {
+        return new MonthlySessionsSummary(dailySummary.getYear(), dailySummary.getMonth(), null, null,
+                dailySummary.getSwimDuration(), dailySummary.getCycleDuration(), dailySummary.getRunDuration(), dailySummary.getAthleticDuration());
     }
 
     public String createTimerangeString() {
