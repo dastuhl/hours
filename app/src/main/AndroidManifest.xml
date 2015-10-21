@@ -29,7 +29,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".EditSessionActivity"
+            android:name=".DetailSessionsSummaryActivity"
             android:label="@string/title_activity_edit_session"
             android:parentActivityName=".MainActivity">
         </activity>

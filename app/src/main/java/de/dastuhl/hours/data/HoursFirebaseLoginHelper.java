@@ -31,8 +31,7 @@ public class HoursFirebaseLoginHelper {
             return ref.getAuth();
         } else {
             // login aufrufen
-            Intent loginIntent = new Intent(context, LoginActivity.class);
-            context.startActivity(loginIntent);
+            LoginActivity.start(context);
         }
         return null;
     }

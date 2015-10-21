@@ -5,6 +5,8 @@ import android.os.Parcelable;
 
 import java.util.Calendar;
 
+import de.dastuhl.hours.Util;
+
 /**
  * Created by Martin on 24.09.2015.
  */
@@ -26,14 +28,22 @@ public class DailySessionsSummary extends SessionsSummary {
                 pSwimDuration, pCycleDuration, pRunDuration, pAthleticDuration);
     }
 
-    public static DailySessionsSummary fromSessionsSummary(SessionsSummary summary) {
+    public static DailySessionsSummary newInstanceForToday() {
+        Calendar cal = Calendar.getInstance();
+        return new DailySessionsSummary(
+                cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1,
+                cal.get(Calendar.WEEK_OF_YEAR), cal.get(Calendar.DAY_OF_MONTH), 0, 0, 0, 0
+        );
+    }
+
+    public static DailySessionsSummary newInstanceFromSessionsSummary(SessionsSummary summary) {
         return new DailySessionsSummary(summary.getYear(), summary.getMonth(), summary.getWeekOfYear(), summary.getDayOfMonth(),
                 summary.getSwimDuration(), summary.getCycleDuration(), summary.getRunDuration(), summary.getAthleticDuration());
     }
 
     public String createTimerangeString() {
         StringBuilder builder = new StringBuilder();
-        builder.append(getYear()).append("-").append(twoFigure(getMonth())).append("-").append(twoFigure(getDayOfMonth()));
+        builder.append(getYear()).append("-").append(Util.twoFigure(getMonth())).append("-").append(Util.twoFigure(getDayOfMonth()));
         String result = builder.toString();
         if (result.length() != 10) {
             throw new IllegalStateException("invalid Date " + result);

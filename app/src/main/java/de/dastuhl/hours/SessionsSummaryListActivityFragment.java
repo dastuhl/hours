@@ -20,7 +20,6 @@ import de.dastuhl.hours.data.HoursFirebaseConnector;
 import de.dastuhl.hours.data.HoursFirebaseLoginHelper;
 import de.dastuhl.hours.data.model.DailySessionsSummary;
 import de.dastuhl.hours.data.model.MonthlySessionsSummary;
-import de.dastuhl.hours.data.model.SessionsSummary;
 import de.dastuhl.hours.data.model.WeeklySessionsSummary;
 import de.dastuhl.hours.data.model.YearlySessionsSummary;
 
@@ -28,7 +27,8 @@ import de.dastuhl.hours.data.model.YearlySessionsSummary;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class SessionListActivityFragment extends Fragment implements MainActivity.SessionListCallback {
+public class SessionsSummaryListActivityFragment extends Fragment
+        implements MainActivity.SessionListCallback, SessionsSummaryViewAdapter.SummarySelectionListener {
 
     private static final String CUMULATION_INITIALIZED = "CumInitialized";
 
@@ -37,24 +37,24 @@ public class SessionListActivityFragment extends Fragment implements MainActivit
      * fragment.
      */
     public static final String ARG_SECTION_NUMBER = "section_number";
-    private static final int NEW_SESSION_REQUEST_CODE = 1;
+    static final int NEW_SESSION_REQUEST_CODE = 1;
 
     @Bind(R.id.listview_sessions)
     RecyclerView sessionListView;
 
-    private SessionsViewAdapter adapter;
+    private SessionsSummaryViewAdapter adapter;
 
     private AuthData authUser;
 
     HoursFirebaseConnector firebaseConnector;
 
-    public SessionListActivityFragment() {
+    public SessionsSummaryListActivityFragment() {
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_session_list, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_sessions_summaries_list, container, false);
 
         int section = (int) getArguments().get(ARG_SECTION_NUMBER);
 
@@ -113,7 +113,8 @@ public class SessionListActivityFragment extends Fragment implements MainActivit
                 break;
         }
         if(ref != null) {
-            adapter = new SessionsViewAdapter(clazz, R.layout.list_item_session_chart, SessionsViewAdapter.SessionListViewHolder.class, ref);
+            adapter = new SessionsSummaryViewAdapter(clazz, R.layout.list_item_sessions_summary_chart,
+                    SessionsSummaryViewAdapter.SessionListViewHolder.class, ref, getActivity(), this);
             sessionListView.setAdapter(adapter);
         }
     }
@@ -134,27 +135,22 @@ public class SessionListActivityFragment extends Fragment implements MainActivit
                 getArguments().getInt(ARG_SECTION_NUMBER));
     }
 
-    @OnClick(R.id.add_session_fab)
+    @OnClick(R.id.add_dailysummary_fab)
     void addSessionButtonClicked(){
-        Intent newSessionIntent = new Intent(getActivity(), EditSessionActivity.class);
-        startActivityForResult(newSessionIntent, NEW_SESSION_REQUEST_CODE);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == Activity.RESULT_OK) {
-            switch (requestCode) {
-                case NEW_SESSION_REQUEST_CODE:
-                    SessionsSummary newSessionsSummary = data.getParcelableExtra(EditSessionActivityFragment.RESULT_SESSION);
-                    DailySessionsSummary dailySessionsSummary = DailySessionsSummary.fromSessionsSummary(newSessionsSummary);
-                    firebaseConnector.saveDailySummary(dailySessionsSummary);
-                    break;
-            }
-        }
+        DetailSessionsSummaryActivity.start(getActivity(), authUser.getUid(), null);
     }
 
     @Override
     public void listTypeChanged(int listType) {
         initializeAdapter(listType);
+    }
+
+    @Override
+    public void summarySelected(String url) {
+        DetailSessionsSummaryActivity.start(getActivity(), authUser.getUid(), url);
+        //Intent detailSummaryIntent = new Intent(getActivity(), DetailSessionsSummaryActivity.class);
+        //detailSummaryIntent.putExtra(DetailSessionsSummaryActivityFragment.ARG_USER_ID, authUser.getUid());
+        //detailSummaryIntent.putExtra(DetailSessionsSummaryActivityFragment.ARG_SUMMARY_URL, url);
+        //startActivity(detailSummaryIntent);
     }
 }

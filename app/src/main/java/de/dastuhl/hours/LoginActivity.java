@@ -1,6 +1,7 @@
 package de.dastuhl.hours;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -40,7 +41,10 @@ public class LoginActivity extends ActionBarActivity {
 
     private AuthData authenticatedUser;
 
-    private HoursFirebaseConnector firebaseConnector;
+    public static void start(Context context) {
+        Intent loginIntent = new Intent(context, LoginActivity.class);
+        context.startActivity(loginIntent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

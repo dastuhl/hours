@@ -18,13 +18,16 @@ import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collection;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import de.dastuhl.hours.data.HoursFirebaseConnector;
 import de.dastuhl.hours.data.model.DailySessionsSummary;
 import de.dastuhl.hours.data.model.SessionsSummary;
 
@@ -32,7 +35,8 @@ import de.dastuhl.hours.data.model.SessionsSummary;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class EditSessionActivityFragment extends Fragment {
+public class DetailSessionsSummaryActivityFragment extends Fragment
+        implements HoursFirebaseConnector.SessionsSummaryLoader {
 
     private static final String TAG_TIME_PICKER_DIALOG = "time_picker";
     private static final String TAG_DATE_PICKER_DIALOG = "date_picker";
@@ -43,10 +47,27 @@ public class EditSessionActivityFragment extends Fragment {
     private static final int TIME_DIALOG_RUN = 4;
     private static final int TIME_DIALOG_ATHLETIC = 5;
 
-    public static final String RESULT_SESSION = "resultSession";
+    private enum EditMode {
+        SHOW(false),
+        UPDATE(true),
+        NEW(true);
+
+        private boolean editable;
+
+        EditMode(boolean editable) {
+            this.editable = editable;
+        }
+
+        boolean isEditable() {
+            return editable;
+        };
+    }
+
+    static final String ARG_SUMMARY_URL = "argSummary";
+    static final String ARG_USER_ID = "argUserId";
 
     @Bind(R.id.session_date)
-    EditText sessionDateText;
+    EditText dailySummaryDateText;
 
     @Bind(R.id.session_duration_swim)
     EditText durationSwimmingText;
@@ -60,22 +81,48 @@ public class EditSessionActivityFragment extends Fragment {
     @Bind(R.id.session_duration_athletic)
     EditText durationAthleticText;
 
-    private Calendar sessionDate;
-    private Integer durationSwim;
-    private Integer durationCycle;
-    private Integer durationRun;
-    private Integer durationAthletic;
+    private Calendar dailySummaryDate;
+    private SessionsSummary summary;
+    private EditMode editMode;
 
-    public EditSessionActivityFragment() {
+    private HoursFirebaseConnector firebaseConnector;
+
+    public DetailSessionsSummaryActivityFragment() {
+    }
+
+    public static DetailSessionsSummaryActivityFragment newInstance(String userId, String url) {
+        DetailSessionsSummaryActivityFragment fragment = new DetailSessionsSummaryActivityFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_SUMMARY_URL, url);
+        args.putString(ARG_USER_ID, userId);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_edit_session, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_detail_sessions_summary, container, false);
         setHasOptionsMenu(true);
         ButterKnife.bind(this, rootView);
 
+        dailySummaryDate = null;
+        editMode = EditMode.SHOW;
+
+        // TODO args set?
+        Bundle args = getArguments();
+        String url = args.getString(ARG_SUMMARY_URL);
+        String userId = args.getString(ARG_USER_ID);
+        if (userId != null) {
+            firebaseConnector = new HoursFirebaseConnector(userId, getActivity());
+            if (url == null || url.isEmpty()) {
+                summary = DailySessionsSummary.newInstanceForToday();
+                editMode = EditMode.NEW;
+                updateLabels();
+            } else {
+                firebaseConnector.loadSessionsSummary(url, this);
+            }
+        }
         return rootView;
     }
 
@@ -84,6 +131,15 @@ public class EditSessionActivityFragment extends Fragment {
         inflater.inflate(R.menu.menu_edit_session_fragment, menu);
 
         MenuItem item = menu.findItem(R.id.menu_action_done);
+        if (item != null) {
+            item.setEnabled(editMode.isEditable());
+            item.setVisible(editMode.isEditable());
+        }
+        item = menu.findItem(R.id.action_cancel);
+        if (item != null) {
+            item.setEnabled(editMode.isEditable());
+            item.setVisible(editMode.isEditable());
+        }
     }
 
     @Override
@@ -91,15 +147,15 @@ public class EditSessionActivityFragment extends Fragment {
 
         switch (item.getItemId()) {
             case R.id.menu_action_done:
-                Intent data = new Intent();
-                SessionsSummary dailySummary = new DailySessionsSummary(sessionDate,
-                        durationSwim == null ? 0 : durationSwim,
-                        durationCycle == null ? 0 : durationCycle,
-                        durationRun == null ? 0 : durationRun,
-                        durationAthletic == null ? 0 : durationAthletic);
-                data.putExtra(RESULT_SESSION, dailySummary);
-                getActivity().setResult(Activity.RESULT_OK, data);
-                getActivity().finish();
+                if (dailySummaryDate != null) {
+                    DailySessionsSummary dailySummary = DailySessionsSummary
+                            .newInstanceFromSessionsSummary(summary);
+                    firebaseConnector.saveDailySummary(dailySummary);
+                    getActivity().finish();
+                } else {
+                    Toast toast = Toast.makeText(getActivity(),
+                            getString(R.string.summary_date_not_set), Toast.LENGTH_SHORT);
+                }
                 return true;
             case R.id.action_cancel:
                 getActivity().finish();
@@ -128,7 +184,9 @@ public class EditSessionActivityFragment extends Fragment {
 
     @OnClick(R.id.session_date)
     void onSessionDateClicked() {
-        openDialog(DATE_DIALOG);
+        if (editMode == EditMode.NEW) {
+            openDialog(DATE_DIALOG);
+        }
     }
 
     private  void openDialog(int dialogId) {
@@ -147,7 +205,6 @@ public class EditSessionActivityFragment extends Fragment {
                 timeFragment.show(getActivity().getSupportFragmentManager(), TAG_TIME_PICKER_DIALOG);
                 break;
         }
-
     }
 
     @Override
@@ -157,59 +214,61 @@ public class EditSessionActivityFragment extends Fragment {
                 int year = data.getIntExtra("year", -1);
                 int month = data.getIntExtra("month", -1);
                 int day = data.getIntExtra("day", -1);
-                sessionDate = Calendar.getInstance();
-                sessionDate.set(year, month, day);
+                dailySummaryDate = Calendar.getInstance();
+                dailySummaryDate.set(year, month, day);
                 break;
             case TIME_DIALOG_ATHLETIC:
-                durationAthletic = data.getIntExtra("minutes", 0);
+                summary.setAthleticDuration(data.getIntExtra("minutes", 0));
                 break;
             case TIME_DIALOG_CYCLE:
-                durationCycle = data.getIntExtra("minutes", 0);
+                summary.setCycleDuration(data.getIntExtra("minutes", 0));
                 break;
             case TIME_DIALOG_RUN:
-                durationRun = data.getIntExtra("minutes", 0);
+                summary.setRunDuration(data.getIntExtra("minutes", 0));
                 break;
             case TIME_DIALOG_SWIM:
-                durationSwim = data.getIntExtra("minutes", 0);
+                summary.setSwimDuration(data.getIntExtra("minutes", 0));
                 break;
         }
-        updateLabel(requestCode);
+        updateLabels();
     }
 
-    private void updateLabel(int requestCode) {
-        switch (requestCode) {
-            case DATE_DIALOG:
-                String format = "yyyy/MM/dd";
-                SimpleDateFormat sdf = new SimpleDateFormat(format);
-                sessionDateText.setText(sdf.format(sessionDate.getTime()));
-                break;
-            case TIME_DIALOG_ATHLETIC:
-                durationAthleticText.setText(durationAthletic + " " + getString(R.string.Minutes));
-                break;
-            case TIME_DIALOG_SWIM:
-                durationSwimmingText.setText(durationSwim + " " + getString(R.string.Minutes));
-                break;
-            case TIME_DIALOG_CYCLE:
-                durationCyclingText.setText(durationCycle + " " + getString(R.string.Minutes));
-                break;
-            case TIME_DIALOG_RUN:
-                durationRunningText.setText(durationRun + " " + getString(R.string.Minutes));
-                break;
+    @Override
+    public void onDataLoaded(Collection<SessionsSummary> sessionsSummaries) {
+        summary = sessionsSummaries.iterator().next();
+        if (summary instanceof DailySessionsSummary) {
+            editMode = EditMode.UPDATE;
         }
+        updateLabels();
+    }
+
+    @Override
+    public void onLoadingFailed() {
+        getActivity().finish();
+    }
+
+    private void updateLabels() {
+        if (dailySummaryDate != null) {
+            String format = "yyyy-MM-dd";
+            SimpleDateFormat sdf = new SimpleDateFormat(format);
+            dailySummaryDateText.setText(sdf.format(dailySummaryDate.getTime()));
+        } else {
+            dailySummaryDateText.setText(summary.createTimerangeString());
+        }
+        durationAthleticText.setText(summary.getAthleticDuration() + " " + getString(R.string.Minutes));
+        durationSwimmingText.setText(summary.getSwimDuration() + " " + getString(R.string.Minutes));
+        durationCyclingText.setText(summary.getCycleDuration() + " " + getString(R.string.Minutes));
+        durationRunningText.setText(summary.getRunDuration() + " " + getString(R.string.Minutes));
     }
 
     public static class TimePickerFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            // Use the current time as the default values for the picker
-            final Calendar c = Calendar.getInstance();
-            int hour = c.get(Calendar.HOUR_OF_DAY);
-            int minute = c.get(Calendar.MINUTE);
-
             // Create a new instance of TimePickerDialog and return it
-            return new TimePickerDialog(getActivity(), this, hour, minute,
+            TimePickerDialog dialog = new TimePickerDialog(getActivity(), this, 0, 0,
                     DateFormat.is24HourFormat(getActivity()));
+            return dialog;
         }
 
         @Override
@@ -222,7 +281,8 @@ public class EditSessionActivityFragment extends Fragment {
         }
     }
 
-    public static class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
+    public static class DatePickerFragment extends DialogFragment
+            implements DatePickerDialog.OnDateSetListener {
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {

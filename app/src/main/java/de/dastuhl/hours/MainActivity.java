@@ -51,9 +51,9 @@ public class MainActivity extends ActionBarActivity
             Fragment fragment = fragmentManager.findFragmentByTag(SESSION_FRAGMENT_TAG);
 
             if (fragment == null) {
-                fragment = new SessionListActivityFragment();
+                fragment = new SessionsSummaryListActivityFragment();
                 Bundle args = new Bundle();
-                args.putInt(SessionListActivityFragment.ARG_SECTION_NUMBER, position);
+                args.putInt(SessionsSummaryListActivityFragment.ARG_SECTION_NUMBER, position);
                 fragment.setArguments(args);
 
                 fragmentManager.beginTransaction()

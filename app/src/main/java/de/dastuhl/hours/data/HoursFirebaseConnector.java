@@ -10,6 +10,7 @@ import com.firebase.client.ValueEventListener;
 import com.google.common.collect.Maps;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 import de.dastuhl.hours.data.model.DailySessionsSummary;
@@ -162,6 +163,44 @@ public class HoursFirebaseConnector {
         return userYearlySummaries;
     }
 
+    public void loadSessionsSummary(String ref, final SessionsSummaryLoader listener) {
+        Firebase summaryRef = new Firebase(ref);
+        final Class<? extends SessionsSummary> clazz = getClassFromRef(ref);
+        if (clazz != null && summaryRef.getAuth() != null && userID.equals(summaryRef.getAuth().getUid())) {
+            summaryRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    SessionsSummary summary = dataSnapshot.getValue(clazz);
+                    if (summary == null) {
+                        listener.onLoadingFailed();
+                    } else {
+                        listener.onDataLoaded(Collections.singleton(summary));
+                    }
+                }
+
+                @Override
+                public void onCancelled(FirebaseError firebaseError) {
+                    listener.onLoadingFailed();
+                }
+            });
+        } else {
+            listener.onLoadingFailed();
+        }
+    }
+
+    private Class<? extends SessionsSummary> getClassFromRef(String ref) {
+        if (ref.contains(SUMMARIES_DAILY)) {
+            return DailySessionsSummary.class;
+        } else if (ref.contains(SUMMARIES_WEEKLY)) {
+            return WeeklySessionsSummary.class;
+        } else if(ref.contains(SUMMARIES_MONTHLY)) {
+            return MonthlySessionsSummary.class;
+        } else if (ref.contains(SUMMARIES_YEARLY)) {
+            return YearlySessionsSummary.class;
+        }
+        return null;
+    }
+
     public void saveDailySummary(DailySessionsSummary sessionsSummary) {
         if (sessionsSummary != null) {
             saveSession(sessionsSummary, getUserDailySummaries());
@@ -201,7 +240,7 @@ public class HoursFirebaseConnector {
 
         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
             SessionsSummary summary = snapshot.getValue(SessionsSummary.class);
-            DailySessionsSummary dailySummary = DailySessionsSummary.fromSessionsSummary(summary);
+            DailySessionsSummary dailySummary = DailySessionsSummary.newInstanceFromSessionsSummary(summary);
             String yearlyKey = dailySummary.createKeyForYearlySummary();
             String monthlyKey = dailySummary.createKeyForMonthlySummary();
             String weeklyKey = dailySummary.createKeyForWeeklySummary();
@@ -235,5 +274,10 @@ public class HoursFirebaseConnector {
 
     public boolean isSummariesInitialized() {
         return summariesInitialized;
+    }
+
+    public static interface SessionsSummaryLoader {
+        void onDataLoaded(Collection<SessionsSummary> sessionsSummaries);
+        void onLoadingFailed();
     }
 }

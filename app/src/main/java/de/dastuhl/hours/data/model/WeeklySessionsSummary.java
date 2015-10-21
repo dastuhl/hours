@@ -3,6 +3,8 @@ package de.dastuhl.hours.data.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import de.dastuhl.hours.Util;
+
 /**
  * Created by Martin on 24.09.2015.
  */
@@ -25,7 +27,7 @@ public class WeeklySessionsSummary extends CumulatedSessionsSummary {
 
     public String createTimerangeString() {
         StringBuilder builder = new StringBuilder();
-        builder.append(getYear()).append("-").append(twoFigure(getWeekOfYear()));
+        builder.append(getYear()).append("-").append(Util.twoFigure(getWeekOfYear()));
         String result = builder.toString();
         if (result.length() != 7) {
             throw new IllegalStateException("invalid Date " + result);

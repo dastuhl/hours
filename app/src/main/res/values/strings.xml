@@ -33,5 +33,6 @@
     <string name="action_cancel">c</string>
     <string name="done">Done</string>
     <string name="cancel">Cancel</string>
+    <string name="summary_date_not_set">Date for daily sessions summary not set.</string>
 
 </resources>

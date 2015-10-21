@@ -10,8 +10,6 @@ import java.util.Calendar;
  */
 public class SessionsSummary implements Parcelable {
 
-    public static final String WEEK_PROPERTY = "weekOfYear";
-    public static final String MONTH_PROPERTY = "month";
     public static final String YEAR_PROPERTY = "year";
 
     // yyyy/mm/dd for day-session, yyyy/mm for monthly summary, yyyy for yearly summary, yyyy-weekNr for weekly summary
@@ -114,24 +112,26 @@ public class SessionsSummary implements Parcelable {
         return Long.valueOf(prio) * -1;
     }
 
-    protected String twoFigure(int number) {
-        String str = "00";
-        String numberString = String.valueOf(number);
-        return (str + numberString).substring(numberString.length());
+    public Integer computeTotals() {
+        Integer total = (this.swimDuration == null ? 0 : this.swimDuration)
+                + (this.athleticDuration == null ? 0 : this.athleticDuration)
+                + (this.cycleDuration == null ? 0 : this.cycleDuration)
+                + (this.runDuration == null ? 0 : this.runDuration);
+        return total;
     }
 
     /*
      * Parcelable
      */
     public SessionsSummary(Parcel in) {
-        this.year = in.readInt();
-        this.month = in.readInt();
-        this.weekOfYear = in.readInt();
-        this.dayOfMonth = in.readInt();
-        this.athleticDuration = in.readInt();
-        this.swimDuration = in.readInt();
-        this.cycleDuration = in.readInt();
-        this.runDuration = in.readInt();
+        this.year = (Integer) in.readValue(null);
+        this.month = (Integer) in.readValue(null);
+        this.weekOfYear = (Integer) in.readValue(null);
+        this.dayOfMonth = (Integer) in.readValue(null);
+        this.athleticDuration = (Integer) in.readValue(null);
+        this.swimDuration = (Integer) in.readValue(null);
+        this.cycleDuration = (Integer) in.readValue(null);
+        this.runDuration = (Integer) in.readValue(null);
     }
 
     /**
@@ -155,14 +155,14 @@ public class SessionsSummary implements Parcelable {
      */
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this.year);
-        dest.writeInt(this.month);
-        dest.writeInt(this.weekOfYear);
-        dest.writeInt(this.dayOfMonth);
-        dest.writeInt(this.athleticDuration);
-        dest.writeInt(this.swimDuration);
-        dest.writeInt(this.cycleDuration);
-        dest.writeInt(this.runDuration);
+        dest.writeValue(this.year);
+        dest.writeValue(this.month);
+        dest.writeValue(this.weekOfYear);
+        dest.writeValue(this.dayOfMonth);
+        dest.writeValue(this.athleticDuration);
+        dest.writeValue(this.swimDuration);
+        dest.writeValue(this.cycleDuration);
+        dest.writeValue(this.runDuration);
     }
 
     public static final Parcelable.Creator<SessionsSummary> CREATOR
