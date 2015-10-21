@@ -148,9 +148,5 @@ public class SessionsSummaryListActivityFragment extends Fragment
     @Override
     public void summarySelected(String url) {
         DetailSessionsSummaryActivity.start(getActivity(), authUser.getUid(), url);
-        //Intent detailSummaryIntent = new Intent(getActivity(), DetailSessionsSummaryActivity.class);
-        //detailSummaryIntent.putExtra(DetailSessionsSummaryActivityFragment.ARG_USER_ID, authUser.getUid());
-        //detailSummaryIntent.putExtra(DetailSessionsSummaryActivityFragment.ARG_SUMMARY_URL, url);
-        //startActivity(detailSummaryIntent);
     }
 }

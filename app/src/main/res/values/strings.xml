@@ -34,5 +34,14 @@
     <string name="done">Done</string>
     <string name="cancel">Cancel</string>
     <string name="summary_date_not_set">Date for daily sessions summary not set.</string>
+    <string name="period">Period</string>
+    <string name="swim">S</string>
+    <string name="cycle">C</string>
+    <string name="run">R</string>
+    <string name="swimming">swimming</string>
+    <string name="athletics">athletic</string>
+    <string name="running">running</string>
+    <string name="cycling">cycling</string>
+    <string name="timeShare">Time Share</string>
 
 </resources>

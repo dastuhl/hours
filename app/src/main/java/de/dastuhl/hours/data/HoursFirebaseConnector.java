@@ -167,7 +167,7 @@ public class HoursFirebaseConnector {
         Firebase summaryRef = new Firebase(ref);
         final Class<? extends SessionsSummary> clazz = getClassFromRef(ref);
         if (clazz != null && summaryRef.getAuth() != null && userID.equals(summaryRef.getAuth().getUid())) {
-            summaryRef.addValueEventListener(new ValueEventListener() {
+            summaryRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     SessionsSummary summary = dataSnapshot.getValue(clazz);

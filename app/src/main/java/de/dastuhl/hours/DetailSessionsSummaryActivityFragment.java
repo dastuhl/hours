@@ -5,6 +5,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -20,9 +21,18 @@ import android.widget.EditText;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.formatter.PercentFormatter;
+import com.google.common.collect.Lists;
+
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -81,6 +91,9 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
     @Bind(R.id.session_duration_athletic)
     EditText durationAthleticText;
 
+    @Bind(R.id.details_pie_chart_view)
+    PieChart chart;
+
     private Calendar dailySummaryDate;
     private SessionsSummary summary;
     private EditMode editMode;
@@ -109,6 +122,8 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
         dailySummaryDate = null;
         editMode = EditMode.SHOW;
 
+        createPieChart();
+
         // TODO args set?
         Bundle args = getArguments();
         String url = args.getString(ARG_SUMMARY_URL);
@@ -118,7 +133,7 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
             if (url == null || url.isEmpty()) {
                 summary = DailySessionsSummary.newInstanceForToday();
                 editMode = EditMode.NEW;
-                updateLabels();
+                updateUI();
             } else {
                 firebaseConnector.loadSessionsSummary(url, this);
             }
@@ -147,15 +162,8 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
 
         switch (item.getItemId()) {
             case R.id.menu_action_done:
-                if (dailySummaryDate != null) {
-                    DailySessionsSummary dailySummary = DailySessionsSummary
-                            .newInstanceFromSessionsSummary(summary);
-                    firebaseConnector.saveDailySummary(dailySummary);
-                    getActivity().finish();
-                } else {
-                    Toast toast = Toast.makeText(getActivity(),
-                            getString(R.string.summary_date_not_set), Toast.LENGTH_SHORT);
-                }
+                firebaseConnector.saveDailySummary((DailySessionsSummary)summary);
+                getActivity().finish();
                 return true;
             case R.id.action_cancel:
                 getActivity().finish();
@@ -230,7 +238,7 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
                 summary.setSwimDuration(data.getIntExtra("minutes", 0));
                 break;
         }
-        updateLabels();
+        updateUI();
     }
 
     @Override
@@ -239,7 +247,7 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
         if (summary instanceof DailySessionsSummary) {
             editMode = EditMode.UPDATE;
         }
-        updateLabels();
+        updateUI();
     }
 
     @Override
@@ -247,7 +255,7 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
         getActivity().finish();
     }
 
-    private void updateLabels() {
+    private void updateUI() {
         if (dailySummaryDate != null) {
             String format = "yyyy-MM-dd";
             SimpleDateFormat sdf = new SimpleDateFormat(format);
@@ -259,6 +267,56 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
         durationSwimmingText.setText(summary.getSwimDuration() + " " + getString(R.string.Minutes));
         durationCyclingText.setText(summary.getCycleDuration() + " " + getString(R.string.Minutes));
         durationRunningText.setText(summary.getRunDuration() + " " + getString(R.string.Minutes));
+
+        addChartData();
+    }
+
+    private void createPieChart() {
+        chart.setUsePercentValues(true);
+        chart.setDescription("");
+        chart.setDrawHoleEnabled(false);
+        chart.setHoleColorTransparent(true);
+        chart.getLegend().setEnabled(false);
+    }
+
+    private void addChartData() {
+        List<Integer> colors = Util.getSportsColors(getActivity());
+        List<Integer> chartColors = Lists.newArrayList();
+        ArrayList<Entry> yVals1 = Lists.newArrayList();
+        ArrayList<String> xVals = Lists.newArrayList();
+        if (summary.getSwimDuration() != null && summary.getSwimDuration().intValue() != 0) {
+            yVals1.add(new Entry(summary.getSwimDuration(), 0));
+            xVals.add(getString(R.string.swimming));
+            chartColors.add(colors.get(0));
+        }
+        if (summary.getCycleDuration() != null && summary.getCycleDuration().intValue() != 0) {
+            yVals1.add(new Entry(summary.getCycleDuration(), 1));
+            xVals.add(getString(R.string.cycling));
+            chartColors.add(colors.get(1));
+        }
+        if (summary.getRunDuration() != null && summary.getRunDuration().intValue() != 0) {
+            yVals1.add(new Entry(summary.getRunDuration(), 2));
+            xVals.add(getString(R.string.running));
+            chartColors.add(colors.get(2));
+        }
+        if (summary.getAthleticDuration() != null && summary.getAthleticDuration().intValue() != 0) {
+            yVals1.add(new Entry(summary.getAthleticDuration(), 3));
+            xVals.add(getString(R.string.athletics));
+            chartColors.add(colors.get(3));
+
+        }
+
+        PieDataSet dataset = new PieDataSet(yVals1, getString(R.string.timeShare));
+        dataset.setColors(chartColors);
+
+        PieData data = new PieData(xVals, dataset);
+        data.setValueFormatter(new PercentFormatter());
+        data.setValueTextSize(12f);
+
+        chart.setData(data);
+        chart.highlightValues(null);
+
+        chart.invalidate();
     }
 
     public static class TimePickerFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {

@@ -88,7 +88,7 @@ public class SessionsSummaryViewAdapter extends FirebaseRecyclerViewAdapter<Sess
         chart.setDescription("");
 
         BarData data = new BarData(xVals, dataSets);
-        //data.setDrawValues(false);
+        data.setValueTextSize(12f);
 
         chart.setData(data);
         chart.invalidate();
@@ -116,10 +116,7 @@ public class SessionsSummaryViewAdapter extends FirebaseRecyclerViewAdapter<Sess
         BarEntry entryRunning = new BarEntry(pSessionsSummary.getRunDuration().floatValue(), 2);
         BarEntry entryAthletic = new BarEntry(pSessionsSummary.getAthleticDuration().floatValue(), 3);
         BarDataSet set = new BarDataSet(Lists.newArrayList(entrySwimming, entryCycling, entryRunning, entryAthletic), "");
-        set.setColors(Lists.newArrayList(context.getResources().getColor(R.color.blue),
-                context.getResources().getColor(R.color.red),
-                context.getResources().getColor(R.color.green),
-                context.getResources().getColor(R.color.black)));
+        set.setColors(Util.getSportsColors(context));
         dataSets.add(set);
 
         List<String> xVals = Lists.newArrayList("S", "C", "R", "A");
@@ -138,7 +135,7 @@ public class SessionsSummaryViewAdapter extends FirebaseRecyclerViewAdapter<Sess
         chart.setDescription("");
 
         BarData data = new BarData(xVals, dataSets);
-        //data.setDrawValues(false);
+        data.setValueTextSize(12f);
 
         chart.setData(data);
         chart.invalidate();
