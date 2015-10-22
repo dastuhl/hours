@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.text.format.DateFormat;
@@ -289,22 +290,22 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
         List<Integer> chartColors = Lists.newArrayList();
         ArrayList<Entry> yVals1 = Lists.newArrayList();
         ArrayList<String> xVals = Lists.newArrayList();
-        if (summary.getSwimDuration() != null && summary.getSwimDuration().intValue() != 0) {
+        if (summary.getSwimDuration() != null && summary.getSwimDuration() != 0) {
             yVals1.add(new Entry(summary.getSwimDuration(), 0));
             xVals.add(getString(R.string.swimming));
             chartColors.add(colors.get(0));
         }
-        if (summary.getCycleDuration() != null && summary.getCycleDuration().intValue() != 0) {
+        if (summary.getCycleDuration() != null && summary.getCycleDuration() != 0) {
             yVals1.add(new Entry(summary.getCycleDuration(), 1));
             xVals.add(getString(R.string.cycling));
             chartColors.add(colors.get(1));
         }
-        if (summary.getRunDuration() != null && summary.getRunDuration().intValue() != 0) {
+        if (summary.getRunDuration() != null && summary.getRunDuration() != 0) {
             yVals1.add(new Entry(summary.getRunDuration(), 2));
             xVals.add(getString(R.string.running));
             chartColors.add(colors.get(2));
         }
-        if (summary.getAthleticDuration() != null && summary.getAthleticDuration().intValue() != 0) {
+        if (summary.getAthleticDuration() != null && summary.getAthleticDuration() != 0) {
             yVals1.add(new Entry(summary.getAthleticDuration(), 3));
             xVals.add(getString(R.string.athletics));
             chartColors.add(colors.get(3));
@@ -327,11 +328,10 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
     public static class TimePickerFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
 
         @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
+        public Dialog onCreateDialog(@NonNull Bundle savedInstanceState) {
             // Create a new instance of TimePickerDialog and return it
-            TimePickerDialog dialog = new TimePickerDialog(getActivity(), this, 0, 0,
+            return new TimePickerDialog(getActivity(), this, 0, 0,
                     DateFormat.is24HourFormat(getActivity()));
-            return dialog;
         }
 
         @Override
@@ -348,7 +348,7 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
             implements DatePickerDialog.OnDateSetListener {
 
         @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
+        public Dialog onCreateDialog(@NonNull Bundle savedInstanceState) {
             // Use the current date as the default date in the picker
             final Calendar c = Calendar.getInstance();
             int year = c.get(Calendar.YEAR);
