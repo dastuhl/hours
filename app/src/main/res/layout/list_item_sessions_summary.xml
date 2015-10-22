@@ -3,7 +3,10 @@
               android:layout_height="wrap_content"
               android:gravity="center_vertical"
               android:orientation="horizontal"
-              android:padding="16dp"
+              android:paddingLeft="@dimen/activity_horizontal_margin"
+              android:paddingRight="@dimen/activity_horizontal_margin"
+              android:paddingTop="8dp"
+              android:paddingBottom="8dp"
               android:minHeight="?android:attr/listPreferredItemHeight" >
 
     <TextView

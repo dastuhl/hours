@@ -5,7 +5,6 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -19,7 +18,6 @@ import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.Entry;
@@ -28,7 +26,6 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.google.common.collect.Lists;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -70,7 +67,9 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
 
         boolean isEditable() {
             return editable;
-        };
+        }
+
+        ;
     }
 
     static final String ARG_SUMMARY_URL = "argSummary";
@@ -94,11 +93,12 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
     @Bind(R.id.details_pie_chart_view)
     PieChart chart;
 
-    private Calendar dailySummaryDate;
     private SessionsSummary summary;
     private EditMode editMode;
 
     private HoursFirebaseConnector firebaseConnector;
+
+    MenuItem doneButton;
 
     public DetailSessionsSummaryActivityFragment() {
     }
@@ -119,10 +119,9 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
         setHasOptionsMenu(true);
         ButterKnife.bind(this, rootView);
 
-        dailySummaryDate = null;
         editMode = EditMode.SHOW;
 
-        createPieChart();
+        definePieChart();
 
         // TODO args set?
         Bundle args = getArguments();
@@ -143,17 +142,16 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_edit_session_fragment, menu);
+        inflater.inflate(R.menu.menu_detail_sessions_summary_fragment, menu);
 
-        MenuItem item = menu.findItem(R.id.menu_action_done);
-        if (item != null) {
-            item.setEnabled(editMode.isEditable());
-            item.setVisible(editMode.isEditable());
-        }
-        item = menu.findItem(R.id.action_cancel);
-        if (item != null) {
-            item.setEnabled(editMode.isEditable());
-            item.setVisible(editMode.isEditable());
+        doneButton = menu.findItem(R.id.menu_action_done);
+        configureDoneButton();
+    }
+
+    private void configureDoneButton() {
+        if (doneButton != null) {
+            doneButton.setEnabled(editMode.isEditable());
+            doneButton.setVisible(editMode.isEditable());
         }
     }
 
@@ -162,10 +160,7 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
 
         switch (item.getItemId()) {
             case R.id.menu_action_done:
-                firebaseConnector.saveDailySummary((DailySessionsSummary)summary);
-                getActivity().finish();
-                return true;
-            case R.id.action_cancel:
+                firebaseConnector.saveDailySummary((DailySessionsSummary) summary);
                 getActivity().finish();
                 return true;
             default:
@@ -177,17 +172,22 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
     void onDurationSwimmingClicked() {
         openDialog(TIME_DIALOG_SWIM);
     }
+
     @OnClick(R.id.session_duration_cycle)
     void onDurationCyclingClicked() {
         openDialog(TIME_DIALOG_CYCLE);
     }
+
     @OnClick(R.id.session_duration_run)
     void onDurationRunningClicked() {
         openDialog(TIME_DIALOG_RUN);
     }
+
     @OnClick(R.id.session_duration_athletic)
     void onDurationAthleticClicked() {
-        openDialog(TIME_DIALOG_ATHLETIC);
+        if (editMode.isEditable()) {
+            openDialog(TIME_DIALOG_ATHLETIC);
+        }
     }
 
     @OnClick(R.id.session_date)
@@ -197,7 +197,7 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
         }
     }
 
-    private  void openDialog(int dialogId) {
+    private void openDialog(int dialogId) {
         switch (dialogId) {
             case DATE_DIALOG:
                 DialogFragment dateFragment = new DatePickerFragment();
@@ -222,8 +222,12 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
                 int year = data.getIntExtra("year", -1);
                 int month = data.getIntExtra("month", -1);
                 int day = data.getIntExtra("day", -1);
-                dailySummaryDate = Calendar.getInstance();
-                dailySummaryDate.set(year, month, day);
+                Calendar cal = Calendar.getInstance();
+                cal.set(year, month, day);
+                summary.setDayOfMonth(cal.get(Calendar.DAY_OF_MONTH));
+                summary.setWeekOfYear(cal.get(Calendar.WEEK_OF_YEAR));
+                summary.setMonth(cal.get(Calendar.MONTH));
+                summary.setYear(cal.get(Calendar.YEAR));
                 break;
             case TIME_DIALOG_ATHLETIC:
                 summary.setAthleticDuration(data.getIntExtra("minutes", 0));
@@ -246,6 +250,7 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
         summary = sessionsSummaries.iterator().next();
         if (summary instanceof DailySessionsSummary) {
             editMode = EditMode.UPDATE;
+            configureDoneButton();
         }
         updateUI();
     }
@@ -256,13 +261,7 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
     }
 
     private void updateUI() {
-        if (dailySummaryDate != null) {
-            String format = "yyyy-MM-dd";
-            SimpleDateFormat sdf = new SimpleDateFormat(format);
-            dailySummaryDateText.setText(sdf.format(dailySummaryDate.getTime()));
-        } else {
-            dailySummaryDateText.setText(summary.createTimerangeString());
-        }
+        dailySummaryDateText.setText(summary.createTimerangeString());
         durationAthleticText.setText(summary.getAthleticDuration() + " " + getString(R.string.Minutes));
         durationSwimmingText.setText(summary.getSwimDuration() + " " + getString(R.string.Minutes));
         durationCyclingText.setText(summary.getCycleDuration() + " " + getString(R.string.Minutes));
@@ -271,7 +270,7 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
         addChartData();
     }
 
-    private void createPieChart() {
+    private void definePieChart() {
         chart.setUsePercentValues(true);
         chart.setDescription("");
         chart.setDrawHoleEnabled(false);
