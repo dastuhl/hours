@@ -18,7 +18,7 @@ public class CumulatedSessionsSummary extends SessionsSummary {
     public void addSessionDurations(DailySessionsSummary dailySummary) {
         this.setAthleticDuration(this.getAthleticDuration() + dailySummary.getAthleticDuration());
         this.setSwimDuration(this.getSwimDuration() + dailySummary.getSwimDuration());
-        this.setCycleDuration(this.getSwimDuration() + dailySummary.getCycleDuration());
+        this.setCycleDuration(this.getCycleDuration() + dailySummary.getCycleDuration());
         this.setRunDuration(this.getRunDuration() + dailySummary.getRunDuration());
     }
 

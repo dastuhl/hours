@@ -18,7 +18,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 /**
@@ -49,6 +48,8 @@ public class NavigationDrawerFragment extends Fragment {
      * A pointer to the current callbacks instance (the Activity).
      */
     private NavigationDrawerCallbacks mCallbacks;
+
+    private NavigationDrawerAdapter adapter;
 
     /**
      * Helper component that ties the action bar to the navigation drawer.
@@ -102,17 +103,17 @@ public class NavigationDrawerFragment extends Fragment {
                 selectItem(position);
             }
         });
-        mDrawerListView.setAdapter(new ArrayAdapter<String>(
+        adapter = new NavigationDrawerAdapter(
                 getActionBar().getThemedContext(),
-                android.R.layout.simple_list_item_activated_1,
-                android.R.id.text1,
+                R.layout.navigation_drawer_item,
+                R.id.navigation_drawer_item,
                 new String[]{
                         getString(R.string.title_section1),
                         getString(R.string.title_section2),
                         getString(R.string.title_section3),
                         getString(R.string.title_section4),
-                        getString(R.string.title_section5)
-                }));
+                        getString(R.string.title_section5)});
+        mDrawerListView.setAdapter(adapter);
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;
     }
@@ -197,6 +198,9 @@ public class NavigationDrawerFragment extends Fragment {
 
     private void selectItem(int position) {
         mCurrentSelectedPosition = position;
+        if (adapter != null) {
+            adapter.setSelectedItem(position);
+        }
         if (mDrawerListView != null) {
             mDrawerListView.setItemChecked(position, true);
         }

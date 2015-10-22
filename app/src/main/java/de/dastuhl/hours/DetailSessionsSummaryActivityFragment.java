@@ -226,7 +226,7 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
                 cal.set(year, month, day);
                 summary.setDayOfMonth(cal.get(Calendar.DAY_OF_MONTH));
                 summary.setWeekOfYear(cal.get(Calendar.WEEK_OF_YEAR));
-                summary.setMonth(cal.get(Calendar.MONTH));
+                summary.setMonth(cal.get(Calendar.MONTH) + 1);
                 summary.setYear(cal.get(Calendar.YEAR));
                 break;
             case TIME_DIALOG_ATHLETIC:

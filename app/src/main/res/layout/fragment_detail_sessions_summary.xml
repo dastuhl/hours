@@ -90,7 +90,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/athletic_button"
-            android:text="@string/run"/>
+            android:text="@string/athletic_short"/>
         <EditText
             android:id="@+id/session_duration_athletic"
             android:hint="@string/duration_athletic"

@@ -43,5 +43,6 @@
     <string name="running">running</string>
     <string name="cycling">cycling</string>
     <string name="timeShare">Time Share</string>
+    <string name="athletic_short">A</string>
 
 </resources>
