@@ -44,5 +44,7 @@
     <string name="cycling">cycling</string>
     <string name="timeShare">Time Share</string>
     <string name="athletic_short">A</string>
+    <string name="date_hint">date</string>
+    <string name="time_hint">00:00</string>
 
 </resources>

@@ -21,7 +21,6 @@
             android:text="@string/period"/>
         <EditText
             android:id="@+id/session_date"
-            android:hint="@string/date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:focusable="false" />
@@ -32,17 +31,41 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:orientation="horizontal">
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/swim_button"
-            android:text="@string/swim"/>
-        <EditText
-            android:id="@+id/session_duration_swim"
-            android:hint="@string/duration_swim"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:focusable="false" />
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/swim_button"
+                android:text="@string/swim"/>
+            <EditText
+                android:id="@+id/session_duration_swim"
+                android:hint="@string/time_hint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="false" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/cycle_button"
+                android:text="@string/cycle"/>
+            <EditText
+                android:id="@+id/session_duration_cycle"
+                android:hint="@string/time_hint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="false" />
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
@@ -50,53 +73,40 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:orientation="horizontal">
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/cycle_button"
-            android:text="@string/cycle"/>
-        <EditText
-            android:id="@+id/session_duration_cycle"
-            android:hint="@string/duration_cycle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:focusable="false" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="horizontal">
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/run_button"
-            android:text="@string/run"/>
-        <EditText
-            android:id="@+id/session_duration_run"
-            android:hint="@string/duration_run"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:focusable="false" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="horizontal">
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/athletic_button"
-            android:text="@string/athletic_short"/>
-        <EditText
-            android:id="@+id/session_duration_athletic"
-            android:hint="@string/duration_athletic"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:focusable="false" />
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/run_button"
+                android:text="@string/run"/>
+            <EditText
+                android:id="@+id/session_duration_run"
+                android:hint="@string/time_hint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="false" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/athletic_button"
+                android:text="@string/athletic_short"/>
+            <EditText
+                android:id="@+id/session_duration_athletic"
+                android:hint="@string/time_hint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="false" />
+        </LinearLayout>
     </LinearLayout>
 
     <com.github.mikephil.charting.charts.PieChart
