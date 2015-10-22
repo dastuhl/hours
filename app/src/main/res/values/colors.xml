@@ -8,4 +8,6 @@
     <color name="hours_blue">#ff1ca8f4</color>
     <color name="hours_dark_blue">#0288D1</color>
     <color name="hours_light_blue">#CCE6FF</color>
+
+    <color name="hours_green">#339966</color>
 </resources>

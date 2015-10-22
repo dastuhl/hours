@@ -70,7 +70,7 @@ public class SessionsSummaryViewAdapter extends FirebaseRecyclerViewAdapter<Sess
         List<BarDataSet> dataSets = Lists.newArrayList();
         BarEntry totalEntry = new BarEntry(total, 0);
         BarDataSet set = new BarDataSet(Lists.newArrayList(totalEntry), "");
-        set.setColors(Lists.newArrayList(context.getResources().getColor(R.color.hours_light_blue)));
+        set.setColors(Lists.newArrayList(context.getResources().getColor(R.color.hours_green)));
         dataSets.add(set);
 
         List<String> xVals = Lists.newArrayList("T");

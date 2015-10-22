@@ -170,17 +170,23 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
 
     @OnClick(R.id.session_duration_swim)
     void onDurationSwimmingClicked() {
-        openDialog(TIME_DIALOG_SWIM);
+        if (editMode.isEditable()) {
+            openDialog(TIME_DIALOG_SWIM);
+        }
     }
 
     @OnClick(R.id.session_duration_cycle)
     void onDurationCyclingClicked() {
-        openDialog(TIME_DIALOG_CYCLE);
+        if (editMode.isEditable()) {
+            openDialog(TIME_DIALOG_CYCLE);
+        }
     }
 
     @OnClick(R.id.session_duration_run)
     void onDurationRunningClicked() {
-        openDialog(TIME_DIALOG_RUN);
+        if (editMode.isEditable()) {
+            openDialog(TIME_DIALOG_RUN);
+        }
     }
 
     @OnClick(R.id.session_duration_athletic)
