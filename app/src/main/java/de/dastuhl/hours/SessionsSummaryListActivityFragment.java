@@ -30,6 +30,7 @@ public class SessionsSummaryListActivityFragment extends Fragment
         implements MainActivity.SessionListCallback, SessionsSummaryViewAdapter.SummarySelectionListener {
 
     private static final String CUMULATION_INITIALIZED = "CumInitialized";
+    private static final String LIST_TYPE = "ListType";
 
     /**
      * The fragment argument representing the section number for this
@@ -45,6 +46,7 @@ public class SessionsSummaryListActivityFragment extends Fragment
     private AuthData authUser;
 
     HoursFirebaseConnector firebaseConnector;
+    private int selectedListType;
 
     public SessionsSummaryListActivityFragment() {
     }
@@ -54,11 +56,23 @@ public class SessionsSummaryListActivityFragment extends Fragment
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_sessions_summaries_list, container, false);
 
-        int section = (int) getArguments().get(ARG_SECTION_NUMBER);
-
         ButterKnife.bind(this, rootView);
         sessionListView.setHasFixedSize(true);
         sessionListView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        return rootView;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        int section;
+        if (savedInstanceState != null && savedInstanceState.containsKey(LIST_TYPE)) {
+            section = savedInstanceState.getInt(LIST_TYPE);
+        } else {
+            section = (int) getArguments().get(ARG_SECTION_NUMBER);
+        }
 
         authUser = HoursFirebaseLoginHelper.setupUserAuth(getActivity());
         if (authUser != null && authUser.getUid() != null) {
@@ -72,8 +86,6 @@ public class SessionsSummaryListActivityFragment extends Fragment
             firebaseConnector.initSessionsListener(doInit);
             initializeAdapter(section);
         }
-
-        return rootView;
     }
 
     @Override
@@ -82,6 +94,9 @@ public class SessionsSummaryListActivityFragment extends Fragment
 
         if (firebaseConnector != null) {
             outState.putBoolean(CUMULATION_INITIALIZED, firebaseConnector.isSummariesInitialized());
+            if (adapter != null) {
+                outState.putInt(LIST_TYPE, selectedListType);
+            }
         }
     }
 
@@ -114,6 +129,7 @@ public class SessionsSummaryListActivityFragment extends Fragment
             adapter = new SessionsSummaryViewAdapter(clazz, R.layout.list_item_sessions_summary_chart,
                     SessionsSummaryViewAdapter.SessionListViewHolder.class, ref, getActivity(), this);
             sessionListView.setAdapter(adapter);
+            selectedListType = section;
         }
     }
 
