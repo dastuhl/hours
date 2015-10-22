@@ -33,12 +33,13 @@ public class MainActivity extends ActionBarActivity
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mTitle = getTitle();
 
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+
+        mTitle = getTitle();
     }
 
     @Override
@@ -83,6 +84,9 @@ public class MainActivity extends ActionBarActivity
                 break;
             case NavigationDrawerFragment.LIST_TYPE_YEARS:
                 mTitle = getString(R.string.title_section4);
+        }
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(mTitle);
         }
     }
 

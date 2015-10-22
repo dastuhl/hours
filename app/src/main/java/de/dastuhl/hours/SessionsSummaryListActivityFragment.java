@@ -1,7 +1,6 @@
 package de.dastuhl.hours;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -37,7 +36,6 @@ public class SessionsSummaryListActivityFragment extends Fragment
      * fragment.
      */
     public static final String ARG_SECTION_NUMBER = "section_number";
-    static final int NEW_SESSION_REQUEST_CODE = 1;
 
     @Bind(R.id.listview_sessions)
     RecyclerView sessionListView;
