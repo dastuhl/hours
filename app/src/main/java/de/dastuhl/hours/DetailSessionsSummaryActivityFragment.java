@@ -262,10 +262,10 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
 
     private void updateUI() {
         dailySummaryDateText.setText(summary.createTimerangeString());
-        durationAthleticText.setText(summary.getAthleticDuration() + " " + getString(R.string.Minutes));
-        durationSwimmingText.setText(summary.getSwimDuration() + " " + getString(R.string.Minutes));
-        durationCyclingText.setText(summary.getCycleDuration() + " " + getString(R.string.Minutes));
-        durationRunningText.setText(summary.getRunDuration() + " " + getString(R.string.Minutes));
+        durationAthleticText.setText(Util.getTimeString(summary.getAthleticDuration()));
+        durationSwimmingText.setText(Util.getTimeString(summary.getSwimDuration()));
+        durationCyclingText.setText(Util.getTimeString(summary.getCycleDuration()));
+        durationRunningText.setText(Util.getTimeString(summary.getRunDuration()));
 
         addChartData();
     }

@@ -18,6 +18,7 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import de.dastuhl.hours.chart.TimeFormatter;
 import de.dastuhl.hours.data.model.MonthlySessionsSummary;
 import de.dastuhl.hours.data.model.SessionsSummary;
 import de.dastuhl.hours.data.model.WeeklySessionsSummary;
@@ -74,24 +75,7 @@ public class SessionsSummaryViewAdapter extends FirebaseRecyclerViewAdapter<Sess
 
         List<String> xVals = Lists.newArrayList("T");
 
-        HorizontalBarChart chart = pSessionListViewHolder.chart;
-        chart.getXAxis().setEnabled(false);
-
-        YAxis yTop = pSessionListViewHolder.chart.getAxis(YAxis.AxisDependency.LEFT);
-        YAxis yBottom = pSessionListViewHolder.chart.getAxis(YAxis.AxisDependency.RIGHT);
-        yBottom.setEnabled(false);
-        yTop.setEnabled(false);
-        yBottom.setAxisMaxValue(maxValueYAxis);
-        yTop.setAxisMaxValue(maxValueYAxis);
-        chart.getLegend().setEnabled(false);
-        chart.setContentDescription("");
-        chart.setDescription("");
-
-        BarData data = new BarData(xVals, dataSets);
-        data.setValueTextSize(12f);
-
-        chart.setData(data);
-        chart.invalidate();
+        configureChart(pSessionListViewHolder, maxValueYAxis, dataSets, xVals);
     }
 
     private float getMaxValueYAxis(SessionsSummary pSessionsSummary) {
@@ -121,6 +105,10 @@ public class SessionsSummaryViewAdapter extends FirebaseRecyclerViewAdapter<Sess
 
         List<String> xVals = Lists.newArrayList("S", "C", "R", "A");
 
+        configureChart(pSessionListViewHolder, maxValueYAxis, dataSets, xVals);
+    }
+
+    private void configureChart(SessionListViewHolder pSessionListViewHolder, float maxValueYAxis, List<BarDataSet> dataSets, List<String> xVals) {
         HorizontalBarChart chart = pSessionListViewHolder.chart;
         chart.getXAxis().setEnabled(false);
 
@@ -133,9 +121,12 @@ public class SessionsSummaryViewAdapter extends FirebaseRecyclerViewAdapter<Sess
         chart.getLegend().setEnabled(false);
         chart.setContentDescription("");
         chart.setDescription("");
+        chart.setDrawValueAboveBar(false);
 
         BarData data = new BarData(xVals, dataSets);
         data.setValueTextSize(12f);
+        data.setDrawValues(false);
+        data.setValueFormatter(new TimeFormatter());
 
         chart.setData(data);
         chart.invalidate();
