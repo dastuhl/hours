@@ -283,6 +283,7 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
         chart.setDrawHoleEnabled(false);
         chart.setHoleColorTransparent(true);
         chart.getLegend().setEnabled(false);
+        chart.setClickable(false);
     }
 
     private void addChartData() {

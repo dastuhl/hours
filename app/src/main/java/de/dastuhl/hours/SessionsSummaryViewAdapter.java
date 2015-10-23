@@ -59,8 +59,8 @@ public class SessionsSummaryViewAdapter extends FirebaseRecyclerViewAdapter<Sess
         pSessionListViewHolder.date.setText(pSessionsSummary.createTimerangeString());
         pSessionListViewHolder.total.setText(Util.getTimeString(pSessionsSummary.computeTotals()));
 
-        //createSeparatelyChart(pSessionListViewHolder, pSessionsSummary);
-        createTotalChart(pSessionListViewHolder, pSessionsSummary);
+        createStackedChart(pSessionListViewHolder, pSessionsSummary);
+        //createTotalChart(pSessionListViewHolder, pSessionsSummary);
     }
 
     private void createTotalChart(SessionListViewHolder pSessionListViewHolder, SessionsSummary pSessionsSummary) {
@@ -70,7 +70,7 @@ public class SessionsSummaryViewAdapter extends FirebaseRecyclerViewAdapter<Sess
         List<BarDataSet> dataSets = Lists.newArrayList();
         BarEntry totalEntry = new BarEntry(total, 0);
         BarDataSet set = new BarDataSet(Lists.newArrayList(totalEntry), "");
-        set.setColors(Lists.newArrayList(context.getResources().getColor(R.color.hours_green)));
+        set.setColors(Lists.newArrayList(context.getResources().getColor(R.color.hours_light_grey)));
         dataSets.add(set);
 
         List<String> xVals = Lists.newArrayList("T");
@@ -91,19 +91,23 @@ public class SessionsSummaryViewAdapter extends FirebaseRecyclerViewAdapter<Sess
     }
 
 
-    private void createSeparatelyChart(SessionListViewHolder pSessionListViewHolder, SessionsSummary pSessionsSummary) {
+    private void createStackedChart(SessionListViewHolder pSessionListViewHolder, SessionsSummary pSessionsSummary) {
         float maxValueYAxis = getMaxValueYAxis(pSessionsSummary);
 
         List<BarDataSet> dataSets = Lists.newArrayList();
-        BarEntry entrySwimming = new BarEntry(pSessionsSummary.getSwimDuration().floatValue(), 0);
-        BarEntry entryCycling = new BarEntry(pSessionsSummary.getCycleDuration().floatValue(), 1);
-        BarEntry entryRunning = new BarEntry(pSessionsSummary.getRunDuration().floatValue(), 2);
-        BarEntry entryAthletic = new BarEntry(pSessionsSummary.getAthleticDuration().floatValue(), 3);
-        BarDataSet set = new BarDataSet(Lists.newArrayList(entrySwimming, entryCycling, entryRunning, entryAthletic), "");
+
+        float[] durations = new float[] {
+                pSessionsSummary.getSwimDuration().floatValue(),
+                pSessionsSummary.getCycleDuration().floatValue(),
+                pSessionsSummary.getRunDuration().floatValue(),
+                pSessionsSummary.getAthleticDuration().floatValue()};
+
+        BarEntry entryStackedTotal = new BarEntry(durations, 0);
+        BarDataSet set = new BarDataSet(Lists.newArrayList(entryStackedTotal), "");
         set.setColors(Util.getSportsColors(context));
         dataSets.add(set);
 
-        List<String> xVals = Lists.newArrayList("S", "C", "R", "A");
+        List<String> xVals = Lists.newArrayList("");
 
         configureChart(pSessionListViewHolder, maxValueYAxis, dataSets, xVals);
     }
@@ -122,6 +126,8 @@ public class SessionsSummaryViewAdapter extends FirebaseRecyclerViewAdapter<Sess
         chart.setContentDescription("");
         chart.setDescription("");
         chart.setDrawValueAboveBar(false);
+        chart.setDoubleTapToZoomEnabled(false);
+        chart.setClickable(false);
 
         BarData data = new BarData(xVals, dataSets);
         data.setValueTextSize(12f);
