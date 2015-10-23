@@ -1,5 +1,6 @@
 package de.dastuhl.hours;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -9,12 +10,14 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import de.dastuhl.hours.settings.SettingsActivity;
 import de.dastuhl.hours.data.HoursFirebaseLoginHelper;
+import de.dastuhl.hours.navigation.NavigationDrawerFragment;
 
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
-    private static final String SESSION_FRAGMENT_TAG = "SFT";
+    private static final String SUMMARY_LIST_FRAGMENT_TAG = "SFT";
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -25,11 +28,14 @@ public class MainActivity extends ActionBarActivity
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
     private CharSequence mTitle;
+    private boolean stackedBarChart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        stackedBarChart = Utility.getPreferredBarChartStyle(this);
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -43,13 +49,31 @@ public class MainActivity extends ActionBarActivity
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+
+        boolean styleFromPreferences = Utility.getPreferredBarChartStyle(this);
+        if (styleFromPreferences != stackedBarChart) {
+            Fragment fragment = findSessionsSummaryListActivityFragment();
+            if (fragment != null) {
+                ((SessionsSummaryListCallback) fragment).chartTypeChanged();
+            }
+            stackedBarChart = styleFromPreferences;
+        }
+    }
+
+    private Fragment findSessionsSummaryListActivityFragment() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        return fragmentManager.findFragmentByTag(SUMMARY_LIST_FRAGMENT_TAG);
+    }
+
+    @Override
     public void onNavigationDrawerItemSelected(int position) {
 
         if (position == NavigationDrawerFragment.POSITION_LOGOUT) {
             HoursFirebaseLoginHelper.logoutFirebase(this);
         } else {
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            Fragment fragment = fragmentManager.findFragmentByTag(SESSION_FRAGMENT_TAG);
+            Fragment fragment = findSessionsSummaryListActivityFragment();
 
             if (fragment == null) {
                 fragment = new SessionsSummaryListActivityFragment();
@@ -57,12 +81,13 @@ public class MainActivity extends ActionBarActivity
                 args.putInt(SessionsSummaryListActivityFragment.ARG_SECTION_NUMBER, position);
                 fragment.setArguments(args);
 
+                FragmentManager fragmentManager = getSupportFragmentManager();
                 fragmentManager.beginTransaction()
-                        .replace(R.id.container, fragment, SESSION_FRAGMENT_TAG)
+                        .replace(R.id.container, fragment, SUMMARY_LIST_FRAGMENT_TAG)
                         .commit();
             } else {
                 changeTitle(position);
-                ((SessionListCallback) fragment).listTypeChanged(position);
+                ((SessionsSummaryListCallback) fragment).listTypeChanged(position);
             }
         }
     }
@@ -119,13 +144,15 @@ public class MainActivity extends ActionBarActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    public interface SessionListCallback {
+    public interface SessionsSummaryListCallback {
         void listTypeChanged(int listType);
+        void chartTypeChanged();
     }
 }

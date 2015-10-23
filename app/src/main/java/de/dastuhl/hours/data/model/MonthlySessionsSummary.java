@@ -1,9 +1,6 @@
 package de.dastuhl.hours.data.model;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
-import de.dastuhl.hours.Util;
+import de.dastuhl.hours.Utility;
 
 /**
  * Created by Martin on 24.09.2015.
@@ -24,9 +21,9 @@ public class MonthlySessionsSummary extends CumulatedSessionsSummary {
                 dailySummary.getSwimDuration(), dailySummary.getCycleDuration(), dailySummary.getRunDuration(), dailySummary.getAthleticDuration());
     }
 
-    public String createTimerangeString() {
+    public String createPeriodString() {
         StringBuilder builder = new StringBuilder();
-        builder.append(getYear()).append("-").append(Util.twoFigure(getMonth()));
+        builder.append(getYear()).append("-").append(Utility.twoFigure(getMonth()));
         String result = builder.toString();
         if (result.length() != 7) {
             throw new IllegalStateException("invalid Date " + result);

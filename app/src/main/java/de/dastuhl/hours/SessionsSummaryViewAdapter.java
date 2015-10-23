@@ -56,11 +56,14 @@ public class SessionsSummaryViewAdapter extends FirebaseRecyclerViewAdapter<Sess
     @Override
     public void populateViewHolder(SessionListViewHolder pSessionListViewHolder, SessionsSummary pSessionsSummary) {
 
-        pSessionListViewHolder.date.setText(pSessionsSummary.createTimerangeString());
-        pSessionListViewHolder.total.setText(Util.getTimeString(pSessionsSummary.computeTotals()));
+        pSessionListViewHolder.date.setText(pSessionsSummary.createPeriodString());
+        pSessionListViewHolder.total.setText(Utility.getPeriodString(pSessionsSummary.computeTotals()));
 
-        createStackedChart(pSessionListViewHolder, pSessionsSummary);
-        //createTotalChart(pSessionListViewHolder, pSessionsSummary);
+        if (Utility.getPreferredBarChartStyle(context)) {
+            createStackedChart(pSessionListViewHolder, pSessionsSummary);
+        } else {
+            createTotalChart(pSessionListViewHolder, pSessionsSummary);
+        }
     }
 
     private void createTotalChart(SessionListViewHolder pSessionListViewHolder, SessionsSummary pSessionsSummary) {
@@ -104,7 +107,7 @@ public class SessionsSummaryViewAdapter extends FirebaseRecyclerViewAdapter<Sess
 
         BarEntry entryStackedTotal = new BarEntry(durations, 0);
         BarDataSet set = new BarDataSet(Lists.newArrayList(entryStackedTotal), "");
-        set.setColors(Util.getSportsColors(context));
+        set.setColors(Utility.getSportsColors(context));
         dataSets.add(set);
 
         List<String> xVals = Lists.newArrayList("");

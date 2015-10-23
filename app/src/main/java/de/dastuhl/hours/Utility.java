@@ -1,6 +1,8 @@
 package de.dastuhl.hours;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import com.google.common.collect.Lists;
 
@@ -9,13 +11,13 @@ import java.util.List;
 /**
  * Created by Martin on 18.10.2015.
  */
-public class Util {
+public class Utility {
 
-    private Util() {
+    private Utility() {
 
     }
 
-    public static String getTimeString(Integer minutes) {
+    public static String getPeriodString(Integer minutes) {
         int hours = 0;
         int min = 0;
         if (minutes != null) {
@@ -38,6 +40,11 @@ public class Util {
                 context.getResources().getColor(R.color.color_cycle),
                 context.getResources().getColor(R.color.color_run),
                 context.getResources().getColor(R.color.color_athletic));
+    }
+
+    public static boolean getPreferredBarChartStyle(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getBoolean(context.getString(R.string.pref_barchart_key), true);
     }
 
 }

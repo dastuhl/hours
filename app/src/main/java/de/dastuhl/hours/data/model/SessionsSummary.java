@@ -3,8 +3,6 @@ package de.dastuhl.hours.data.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.util.Calendar;
-
 /**
  * Created by Martin on 24.09.2015.
  */
@@ -102,12 +100,12 @@ public class SessionsSummary implements Parcelable {
         swimDuration = pSwimDuration;
     }
 
-    public String createTimerangeString() {
+    public String createPeriodString() {
         return "";
     }
 
     public Long createPriority() {
-        String prio = createTimerangeString();
+        String prio = createPeriodString();
         prio = prio.replaceAll("-", "");
         return Long.valueOf(prio) * -1;
     }

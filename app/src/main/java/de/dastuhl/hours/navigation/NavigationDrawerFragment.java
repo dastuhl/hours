@@ -1,4 +1,4 @@
-package de.dastuhl.hours;
+package de.dastuhl.hours.navigation;
 
 import android.app.Activity;
 import android.content.res.Configuration;
@@ -17,6 +17,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+
+import de.dastuhl.hours.R;
+import de.dastuhl.hours.navigation.NavigationDrawerAdapter;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.

@@ -21,13 +21,14 @@ import de.dastuhl.hours.data.model.DailySessionsSummary;
 import de.dastuhl.hours.data.model.MonthlySessionsSummary;
 import de.dastuhl.hours.data.model.WeeklySessionsSummary;
 import de.dastuhl.hours.data.model.YearlySessionsSummary;
+import de.dastuhl.hours.navigation.NavigationDrawerFragment;
 
 
 /**
  * A placeholder fragment containing a simple view.
  */
 public class SessionsSummaryListActivityFragment extends Fragment
-        implements MainActivity.SessionListCallback, SessionsSummaryViewAdapter.SummarySelectionListener {
+        implements MainActivity.SessionsSummaryListCallback, SessionsSummaryViewAdapter.SummarySelectionListener {
 
     private static final String CUMULATION_INITIALIZED = "CumInitialized";
     private static final String LIST_TYPE = "ListType";
@@ -157,6 +158,11 @@ public class SessionsSummaryListActivityFragment extends Fragment
     @Override
     public void listTypeChanged(int listType) {
         initializeAdapter(listType);
+    }
+
+    @Override
+    public void chartTypeChanged() {
+        initializeAdapter(selectedListType);
     }
 
     @Override

@@ -23,7 +23,7 @@ public class YearlySessionsSummary extends CumulatedSessionsSummary {
                 dailySummary.getSwimDuration(), dailySummary.getCycleDuration(), dailySummary.getRunDuration(), dailySummary.getAthleticDuration());
     }
 
-    public String createTimerangeString() {
+    public String createPeriodString() {
         String result = String.valueOf(getYear());
         if (result.length() != 4) {
             throw new IllegalStateException("invalid Date " + result);

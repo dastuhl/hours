@@ -227,7 +227,7 @@ public class HoursFirebaseConnector {
 
     private void saveSession(SessionsSummary sessionsSummary, Firebase ref) {
         if (sessionsSummary != null) {
-            String key = sessionsSummary.createTimerangeString();
+            String key = sessionsSummary.createPeriodString();
             final Firebase newSessionRef = ref.child(key);
             newSessionRef.setValue(sessionsSummary, sessionsSummary.createPriority());
         }

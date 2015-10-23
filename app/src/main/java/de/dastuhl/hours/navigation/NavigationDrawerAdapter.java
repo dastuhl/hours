@@ -1,4 +1,4 @@
-package de.dastuhl.hours;
+package de.dastuhl.hours.navigation;
 
 import android.content.Context;
 import android.graphics.Typeface;
@@ -6,6 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+
+import de.dastuhl.hours.R;
 
 /**
  * Created by Martin on 22.10.2015.

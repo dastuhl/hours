@@ -268,11 +268,11 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
     }
 
     private void updateUI() {
-        dailySummaryDateText.setText(summary.createTimerangeString());
-        durationAthleticText.setText(Util.getTimeString(summary.getAthleticDuration()));
-        durationSwimmingText.setText(Util.getTimeString(summary.getSwimDuration()));
-        durationCyclingText.setText(Util.getTimeString(summary.getCycleDuration()));
-        durationRunningText.setText(Util.getTimeString(summary.getRunDuration()));
+        dailySummaryDateText.setText(summary.createPeriodString());
+        durationAthleticText.setText(Utility.getPeriodString(summary.getAthleticDuration()));
+        durationSwimmingText.setText(Utility.getPeriodString(summary.getSwimDuration()));
+        durationCyclingText.setText(Utility.getPeriodString(summary.getCycleDuration()));
+        durationRunningText.setText(Utility.getPeriodString(summary.getRunDuration()));
 
         addChartData();
     }
@@ -287,7 +287,7 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
     }
 
     private void addChartData() {
-        List<Integer> colors = Util.getSportsColors(getActivity());
+        List<Integer> colors = Utility.getSportsColors(getActivity());
         List<Integer> chartColors = Lists.newArrayList();
         ArrayList<Entry> yVals1 = Lists.newArrayList();
         ArrayList<String> xVals = Lists.newArrayList();
