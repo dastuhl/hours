@@ -6,4 +6,33 @@
         android:summary="@string/pref_barchart_stacked_sum"
         android:defaultValue="true" />
 
+    <EditTextPreference
+        android:key="@string/pref_max_value_days_key"
+        android:title="@string/pref_max_value_days"
+        android:selectAllOnFocus="true"
+        android:inputType="number"
+        android:defaultValue="480" />
+
+    <EditTextPreference
+        android:key="@string/pref_max_value_weeks_key"
+        android:title="@string/pref_max_value_weeks"
+        android:selectAllOnFocus="true"
+        android:inputType="number"
+        android:defaultValue="1800" />
+
+    <EditTextPreference
+        android:key="@string/pref_max_value_months_key"
+        android:title="@string/pref_max_value_months"
+        android:selectAllOnFocus="true"
+        android:inputType="number"
+        android:defaultValue="4800" />
+
+    <EditTextPreference
+        android:key="@string/pref_max_value_years_key"
+        android:title="@string/pref_max_value_years"
+        android:selectAllOnFocus="true"
+        android:inputType="number"
+        android:defaultValue="60000" />
+
+
 </PreferenceScreen>

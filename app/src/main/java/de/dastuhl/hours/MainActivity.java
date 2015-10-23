@@ -2,19 +2,25 @@ package de.dastuhl.hours;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import de.dastuhl.hours.settings.SettingsActivity;
+import com.google.common.collect.Lists;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import de.dastuhl.hours.data.HoursFirebaseLoginHelper;
 import de.dastuhl.hours.navigation.NavigationDrawerFragment;
+import de.dastuhl.hours.settings.SettingsActivity;
 
-public class MainActivity extends ActionBarActivity
+public class MainActivity extends AppCompatActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
     private static final String SUMMARY_LIST_FRAGMENT_TAG = "SFT";
@@ -28,7 +34,9 @@ public class MainActivity extends ActionBarActivity
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
     private CharSequence mTitle;
+
     private boolean stackedBarChart;
+    private List<Float> maxValuesForCharts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +44,7 @@ public class MainActivity extends ActionBarActivity
         setContentView(R.layout.activity_main);
 
         stackedBarChart = Utility.getPreferredBarChartStyle(this);
+        maxValuesForCharts = getMaxValuesFromPreferences();
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -48,17 +57,30 @@ public class MainActivity extends ActionBarActivity
         mTitle = getTitle();
     }
 
+    @NonNull
+    private ArrayList<Float> getMaxValuesFromPreferences() {
+        return Lists.newArrayList(
+                Utility.getPreferredMaxValueDays(this),
+                Utility.getPreferredMaxValueWeeks(this),
+                Utility.getPreferredMaxValueMonths(this),
+                Utility.getPreferredMaxValueYears(this)
+        );
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
 
         boolean styleFromPreferences = Utility.getPreferredBarChartStyle(this);
-        if (styleFromPreferences != stackedBarChart) {
+        List<Float> valuesFromPreferences = getMaxValuesFromPreferences();
+        if (styleFromPreferences != stackedBarChart
+                || !valuesFromPreferences.equals(maxValuesForCharts)) {
             Fragment fragment = findSessionsSummaryListActivityFragment();
             if (fragment != null) {
                 ((SessionsSummaryListCallback) fragment).chartTypeChanged();
             }
             stackedBarChart = styleFromPreferences;
+            maxValuesForCharts = valuesFromPreferences;
         }
     }
 

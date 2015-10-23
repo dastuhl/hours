@@ -82,13 +82,13 @@ public class SessionsSummaryViewAdapter extends FirebaseRecyclerViewAdapter<Sess
     }
 
     private float getMaxValueYAxis(SessionsSummary pSessionsSummary) {
-        float maxValueYAxis = 480; // 8h
+        float maxValueYAxis = Utility.getPreferredMaxValueDays(context);
         if (pSessionsSummary instanceof WeeklySessionsSummary) {
-            maxValueYAxis = 1800; // 30h
+            maxValueYAxis = Utility.getPreferredMaxValueWeeks(context);
         } else if (pSessionsSummary instanceof MonthlySessionsSummary) {
-            maxValueYAxis = 4800; // 80h
+            maxValueYAxis = Utility.getPreferredMaxValueMonths(context);
         } else if (pSessionsSummary instanceof YearlySessionsSummary) {
-            maxValueYAxis = 60000; // 1000
+            maxValueYAxis = Utility.getPreferredMaxValueYears(context);
         }
         return maxValueYAxis;
     }

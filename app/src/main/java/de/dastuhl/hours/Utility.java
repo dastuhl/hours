@@ -47,4 +47,28 @@ public class Utility {
         return prefs.getBoolean(context.getString(R.string.pref_barchart_key), true);
     }
 
+    public static float getPreferredMaxValueDays(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String value=  prefs.getString(context.getString(R.string.pref_max_value_days_key), "480");
+        return Float.valueOf(value);
+    }
+
+    public static float getPreferredMaxValueWeeks(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String value=  prefs.getString(context.getString(R.string.pref_max_value_weeks_key), "1800");
+        return Float.valueOf(value);
+    }
+
+    public static float getPreferredMaxValueMonths(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String value=  prefs.getString(context.getString(R.string.pref_max_value_months_key), "4800");
+        return Float.valueOf(value);
+    }
+
+    public static float getPreferredMaxValueYears(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String value=  prefs.getString(context.getString(R.string.pref_max_value_years_key), "60000");
+        return Float.valueOf(value);
+    }
+
 }

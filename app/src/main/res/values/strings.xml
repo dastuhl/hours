@@ -112,4 +112,13 @@
     <string name="pref_barchart_stacked_sum">Use stacked bar charts on the list views to display durations for each sports type.</string>
     <string name="pref_barchart_key">pref_barchart_key</string>
 
+    <string name="pref_max_value_days_key">PrefMaxValueDaysKey</string>
+    <string name="pref_max_value_weeks_key">PrefMaxValueWeeksKey</string>
+    <string name="pref_max_value_months_key">PrefMaxValueMonthsKey</string>
+    <string name="pref_max_value_years_key">PrefMaxValueYearsKey</string>
+    <string name="pref_max_value_days">Max. value for Days View (default 480 minutes)</string>
+    <string name="pref_max_value_weeks">Max. value for Weeks View (default 1800 minutes)</string>
+    <string name="pref_max_value_months">Max. value for Months View (default 4800 minutes)</string>
+    <string name="pref_max_value_years">Max. value for Years View (default 60000 minutes)</string>
+
 </resources>
