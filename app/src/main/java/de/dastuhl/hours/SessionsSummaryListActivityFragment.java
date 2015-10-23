@@ -47,7 +47,12 @@ public class SessionsSummaryListActivityFragment extends Fragment
     private AuthData authUser;
 
     HoursFirebaseConnector firebaseConnector;
+    // Days, Weeks, ...
     private int selectedListType;
+
+    // are the cumulated views (week, months, years) initialized
+    private boolean doInit;
+
 
     public SessionsSummaryListActivityFragment() {
     }
@@ -65,27 +70,37 @@ public class SessionsSummaryListActivityFragment extends Fragment
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    public void onViewStateRestored(Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
 
-        int section;
         if (savedInstanceState != null && savedInstanceState.containsKey(LIST_TYPE)) {
-            section = savedInstanceState.getInt(LIST_TYPE);
+            selectedListType = savedInstanceState.getInt(LIST_TYPE);
         } else {
-            section = (int) getArguments().get(ARG_SECTION_NUMBER);
+            selectedListType = (int) getArguments().get(ARG_SECTION_NUMBER);
         }
 
+        if (savedInstanceState != null && savedInstanceState.containsKey(CUMULATION_INITIALIZED)) {
+            doInit = !savedInstanceState.getBoolean(CUMULATION_INITIALIZED);
+        } else {
+            doInit = true;
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        if (firebaseConnector == null) {
+            setup();
+        }
+    }
+
+    private void setup() {
         authUser = HoursFirebaseLoginHelper.setupUserAuth(getActivity());
         if (authUser != null && authUser.getUid() != null) {
             firebaseConnector = new HoursFirebaseConnector(authUser.getUid(), getActivity());
-            boolean doInit;
-            if (savedInstanceState != null && savedInstanceState.containsKey(CUMULATION_INITIALIZED)) {
-                doInit = !savedInstanceState.getBoolean(CUMULATION_INITIALIZED);
-            } else {
-                doInit = true;
-            }
             firebaseConnector.initSessionsListener(doInit);
-            initializeAdapter(section);
+            initializeAdapter();
         }
     }
 
@@ -101,14 +116,14 @@ public class SessionsSummaryListActivityFragment extends Fragment
         }
     }
 
-    private void initializeAdapter(int section) {
+    private void initializeAdapter() {
         if (firebaseConnector == null) {
             return;
         }
 
         Firebase ref = null;
         Class clazz = null;
-        switch (section) {
+        switch (selectedListType) {
             case NavigationDrawerFragment.LIST_TYPE_DAYS:
                 ref = firebaseConnector.getUserDailySummaries();
                 clazz = DailySessionsSummary.class;
@@ -130,7 +145,6 @@ public class SessionsSummaryListActivityFragment extends Fragment
             adapter = new SessionsSummaryViewAdapter(clazz, R.layout.list_item_sessions_summary_chart,
                     SessionsSummaryViewAdapter.SessionListViewHolder.class, ref, getActivity(), this);
             sessionListView.setAdapter(adapter);
-            selectedListType = section;
         }
     }
 
@@ -157,12 +171,13 @@ public class SessionsSummaryListActivityFragment extends Fragment
 
     @Override
     public void listTypeChanged(int listType) {
-        initializeAdapter(listType);
+        selectedListType = listType;
+        initializeAdapter();
     }
 
     @Override
     public void chartTypeChanged() {
-        initializeAdapter(selectedListType);
+        initializeAdapter();
     }
 
     @Override
