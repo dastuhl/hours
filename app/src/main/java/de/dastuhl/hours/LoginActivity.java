@@ -43,7 +43,8 @@ public class LoginActivity extends ActionBarActivity {
 
     public static void start(Context context) {
         Intent loginIntent = new Intent(context, LoginActivity.class);
-        loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK
+                | Intent.FLAG_ACTIVITY_NO_HISTORY);
         context.startActivity(loginIntent);
     }
 
