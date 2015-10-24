@@ -120,5 +120,6 @@
     <string name="pref_max_value_weeks">Max. value for Weeks View (default 1800 minutes)</string>
     <string name="pref_max_value_months">Max. value for Months View (default 4800 minutes)</string>
     <string name="pref_max_value_years">Max. value for Years View (default 60000 minutes)</string>
+    <string name="register_button_text">register</string>
 
 </resources>

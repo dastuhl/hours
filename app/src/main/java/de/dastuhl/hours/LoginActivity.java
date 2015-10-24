@@ -43,6 +43,7 @@ public class LoginActivity extends ActionBarActivity {
 
     public static void start(Context context) {
         Intent loginIntent = new Intent(context, LoginActivity.class);
+        loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(loginIntent);
     }
 
@@ -93,25 +94,14 @@ public class LoginActivity extends ActionBarActivity {
 
     @OnClick(R.id.login_button)
     void login() {
+        if (!validateData()) {
+            return;
+        }
+
+        showProgressDialog("Authenticating...");
 
         String emailText = email.getText().toString();
         String passwordText = password.getText().toString();
-
-        if (!isEmailValid(emailText)) {
-            Toast.makeText(this, R.string.invalid_email, Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        if (!isPasswordValid(passwordText)) {
-            Toast.makeText(this, R.string.invalid_password, Toast.LENGTH_SHORT).show();;
-            return;
-        }
-
-        mAuthProgressDialog = new ProgressDialog(this);
-        mAuthProgressDialog.setTitle("Loading");
-        mAuthProgressDialog.setMessage("Authenticating...");
-        mAuthProgressDialog.setCancelable(false);
-        mAuthProgressDialog.show();
 
         // try to login user
         authRef.authWithPassword(emailText, passwordText, new Firebase.AuthResultHandler() {
@@ -131,23 +121,80 @@ public class LoginActivity extends ActionBarActivity {
 
             @Override
             public void onAuthenticationError(FirebaseError error) {
-                int resId;
-                switch (error.getCode()) {
-                    case FirebaseError.USER_DOES_NOT_EXIST:
-                        resId = R.string.user_not_exists;
-                        break;
-                    case FirebaseError.INVALID_EMAIL:
-                        resId = R.string.invalid_password;
-                        break;
-                    case FirebaseError.INVALID_PASSWORD:
-                        resId = R.string.invalid_password;
-                    default:
-                        resId = R.string.login_not_succesful;
-                }
-                mAuthProgressDialog.hide();
-                Toast.makeText(LoginActivity.this, resId, Toast.LENGTH_SHORT).show();
+                handleError(error);
             }
         });
+    }
+
+    private void handleError(FirebaseError error) {
+        mAuthProgressDialog.hide();
+        String errorMessage = "Error logging user in: "
+                + error.getMessage();
+        switch (error.getCode()) {
+            case FirebaseError.USER_DOES_NOT_EXIST:
+            case FirebaseError.INVALID_EMAIL:
+            case FirebaseError.EMAIL_TAKEN:
+                email.setError(errorMessage);
+                break;
+            case FirebaseError.INVALID_PASSWORD:
+                password.setError(errorMessage);
+            default:
+                Toast.makeText(LoginActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private boolean validateData() {
+        email.setError(null);
+        password.setError(null);
+        String emailText = email.getText().toString();
+        String passwordText = password.getText().toString();
+
+        if (!isEmailValid(emailText)) {
+            email.setError(getString(R.string.invalid_email));
+            return false;
+        }
+
+        if (!isPasswordValid(passwordText)) {
+            password.setError(getString(R.string.invalid_password));
+            return false;
+        }
+
+        return true;
+    }
+
+    @OnClick(R.id.register_button)
+    void register() {
+        if (!validateData()) {
+            return;
+        }
+
+        showProgressDialog("Registering...");
+
+        String emailText = email.getText().toString();
+        String passwordText = password.getText().toString();
+
+        authRef.createUser(emailText, passwordText, new Firebase.ResultHandler() {
+            @Override
+            public void onSuccess() {
+                mAuthProgressDialog.hide();
+                login();
+            }
+
+            @Override
+            public void onError(FirebaseError firebaseError) {
+                mAuthProgressDialog.hide();
+                handleError(firebaseError);
+            }
+        });
+
+    }
+
+    private void showProgressDialog(String message) {
+        mAuthProgressDialog = new ProgressDialog(this);
+        mAuthProgressDialog.setTitle("Loading");
+        mAuthProgressDialog.setMessage(message);
+        mAuthProgressDialog.setCancelable(false);
+        mAuthProgressDialog.show();
     }
 
     private boolean isEmailValid(String email) {
