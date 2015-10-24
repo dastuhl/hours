@@ -18,7 +18,7 @@ import java.util.List;
 
 import de.dastuhl.hours.data.HoursFirebaseLoginHelper;
 import de.dastuhl.hours.navigation.NavigationDrawerFragment;
-import de.dastuhl.hours.Settings.SettingsActivity;
+import de.dastuhl.hours.SettingsTest.SettingsActivity;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {

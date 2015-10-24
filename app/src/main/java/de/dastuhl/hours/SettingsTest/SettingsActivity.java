@@ -1,4 +1,4 @@
-package de.dastuhl.hours.Settings;
+package de.dastuhl.hours.SettingsTest;
 
 
 import android.app.Activity;
