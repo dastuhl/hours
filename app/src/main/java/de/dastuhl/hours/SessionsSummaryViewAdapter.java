@@ -74,6 +74,7 @@ public class SessionsSummaryViewAdapter extends FirebaseRecyclerViewAdapter<Sess
         BarEntry totalEntry = new BarEntry(total, 0);
         BarDataSet set = new BarDataSet(Lists.newArrayList(totalEntry), "");
         set.setColors(Lists.newArrayList(context.getResources().getColor(R.color.hours_light_grey)));
+        set.setHighlightEnabled(false);
         dataSets.add(set);
 
         List<String> xVals = Lists.newArrayList("T");
@@ -108,6 +109,7 @@ public class SessionsSummaryViewAdapter extends FirebaseRecyclerViewAdapter<Sess
         BarEntry entryStackedTotal = new BarEntry(durations, 0);
         BarDataSet set = new BarDataSet(Lists.newArrayList(entryStackedTotal), "");
         set.setColors(Utility.getSportsColors(context));
+        set.setHighlightEnabled(false);
         dataSets.add(set);
 
         List<String> xVals = Lists.newArrayList("");
@@ -130,7 +132,7 @@ public class SessionsSummaryViewAdapter extends FirebaseRecyclerViewAdapter<Sess
         chart.setDescription("");
         chart.setDrawValueAboveBar(false);
         chart.setDoubleTapToZoomEnabled(false);
-        chart.setClickable(false);
+        chart.setClickable(true);
 
         BarData data = new BarData(xVals, dataSets);
         data.setValueTextSize(12f);
@@ -141,7 +143,8 @@ public class SessionsSummaryViewAdapter extends FirebaseRecyclerViewAdapter<Sess
         chart.invalidate();
     }
 
-    static class SessionListViewHolder extends android.support.v7.widget.RecyclerView.ViewHolder implements View.OnClickListener{
+    static class SessionListViewHolder extends android.support.v7.widget.RecyclerView.ViewHolder
+            implements View.OnClickListener{
 
         SessionSummaryClick listener;
 
@@ -157,6 +160,7 @@ public class SessionsSummaryViewAdapter extends FirebaseRecyclerViewAdapter<Sess
 
             ButterKnife.bind(this, itemView);
 
+            chart.setOnClickListener(this);
             itemView.setOnClickListener(this);
         }
 
