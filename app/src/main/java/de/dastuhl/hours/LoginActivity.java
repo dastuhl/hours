@@ -128,8 +128,7 @@ public class LoginActivity extends ActionBarActivity {
 
     private void handleError(FirebaseError error) {
         mAuthProgressDialog.hide();
-        String errorMessage = "Error logging user in: "
-                + error.getMessage();
+        String errorMessage = error.getMessage();
         switch (error.getCode()) {
             case FirebaseError.USER_DOES_NOT_EXIST:
             case FirebaseError.INVALID_EMAIL:
