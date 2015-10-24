@@ -11,8 +11,8 @@ import de.dastuhl.hours.R;
 public class SettingsFragment extends PreferenceFragment implements
         SharedPreferences.OnSharedPreferenceChangeListener{
 
+    // required Constructor
     public SettingsFragment() {
-        // Required empty public constructor
     }
 
     @Override
