@@ -39,7 +39,7 @@
                 android:value="de.dastuhl.hours.MainActivity" />
         </activity>
         <activity
-            android:name=".settings.SettingsActivity"
+            android:name=".hourssettings.SettingsActivity"
             android:label="@string/title_activity_settings"
             android:parentActivityName=".MainActivity" >
             <meta-data

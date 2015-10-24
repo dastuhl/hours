@@ -1,4 +1,4 @@
-package de.dastuhl.hours.Settings;
+package de.dastuhl.hours.hourssettings;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -9,7 +9,7 @@ import android.preference.PreferenceFragment;
 import de.dastuhl.hours.R;
 
 public class SettingsFragment extends PreferenceFragment implements
-        SharedPreferences.OnSharedPreferenceChangeListener{
+        SharedPreferences.OnSharedPreferenceChangeListener {
 
     // required Constructor
     public SettingsFragment() {
