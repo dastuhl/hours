@@ -98,6 +98,8 @@ public class SessionsSummaryListActivityFragment extends Fragment
     private void setup() {
         authUser = HoursFirebaseLoginHelper.setupUserAuth(getActivity());
         if (authUser != null && authUser.getUid() != null) {
+            ((MainActivity) getActivity()).setUserIdentification(
+                    (String) authUser.getProviderData().get("email"));
             firebaseConnector = new HoursFirebaseConnector(authUser.getUid(), getActivity());
             firebaseConnector.initSessionsListener(doInit);
             initializeAdapter();

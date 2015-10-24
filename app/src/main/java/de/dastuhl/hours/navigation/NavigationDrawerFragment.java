@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import de.dastuhl.hours.R;
 
@@ -54,6 +55,8 @@ public class NavigationDrawerFragment extends Fragment {
     private ListView mDrawerListView;
     private View mFragmentContainerView;
 
+    private TextView mUserIdentificationText;
+
     private int mCurrentSelectedPosition = LIST_TYPE_DAYS;
 
     public NavigationDrawerFragment() {
@@ -75,8 +78,10 @@ public class NavigationDrawerFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mDrawerListView = (ListView) inflater.inflate(
+        View rootView = inflater.inflate(
                 R.layout.fragment_navigation_drawer, container, false);
+        mUserIdentificationText = (TextView) rootView.findViewById(R.id.user_identification_text);
+        mDrawerListView = (ListView) rootView.findViewById(R.id.navigator_list_view);
         mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -95,7 +100,7 @@ public class NavigationDrawerFragment extends Fragment {
                         getString(R.string.title_section5)});
         mDrawerListView.setAdapter(adapter);
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
-        return mDrawerListView;
+        return rootView;
     }
 
     public boolean isDrawerOpen() {
@@ -225,5 +230,9 @@ public class NavigationDrawerFragment extends Fragment {
          * Called when an item in the navigation drawer is selected.
          */
         void onNavigationDrawerItemSelected(int position);
+    }
+
+    public void setmUserIdentificationText(String mUserIdentificationText) {
+        this.mUserIdentificationText.setText(mUserIdentificationText);
     }
 }
