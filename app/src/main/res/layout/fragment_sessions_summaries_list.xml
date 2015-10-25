@@ -22,7 +22,7 @@
         android:clickable="true"
         android:src="@drawable/ic_add_circle_outline_white_48dp"
         app:fabSize="normal"
-        app:backgroundTint="@color/hours_grey"
+        app:backgroundTint="@color/background_material_dark"
         />
 
 </FrameLayout>

@@ -28,10 +28,11 @@ public class NavigationDrawerAdapter extends ArrayAdapter<String> {
         view.setText(getItem(position));
 
         if (position == selectedItem) {
-            view.setTextColor(getContext().getResources().getColor(R.color.hours_grey));
+            view.setTextColor(getContext().getResources().getColor(
+                    R.color.background_material_dark));
             view.setTypeface(Typeface.DEFAULT_BOLD);
         } else {
-            view.setTextColor(getContext().getResources().getColor(android.R.color.white));
+            view.setTextColor(getContext().getResources().getColor(R.color.hours_light_grey));
             view.setTypeface(Typeface.DEFAULT);
         }
 

@@ -2,8 +2,8 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="colorPrimary">@color/hours_grey</item>
-        <item name="colorPrimaryDark">@color/hours_grey</item>
+        <item name="colorPrimary">@color/background_material_dark</item>
+        <item name="colorPrimaryDark">@color/background_material_dark</item>
     </style>
 
     <style name="HoursTheme" parent="AppTheme">
