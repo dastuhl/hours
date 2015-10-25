@@ -231,6 +231,7 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
                 int day = data.getIntExtra("day", -1);
                 Calendar cal = Calendar.getInstance();
                 cal.set(year, month, day);
+                cal.setFirstDayOfWeek(Calendar.MONDAY);
                 summary.setDayOfMonth(cal.get(Calendar.DAY_OF_MONTH));
                 summary.setWeekOfYear(cal.get(Calendar.WEEK_OF_YEAR));
                 summary.setMonth(cal.get(Calendar.MONTH) + 1);
@@ -268,7 +269,7 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
     }
 
     private void updateUI() {
-        dailySummaryDateText.setText(summary.createPeriodString());
+        dailySummaryDateText.setText(Utility.createFriendlyPeriodString(getActivity(), summary));
         durationAthleticText.setText(Utility.getPeriodString(summary.getAthleticDuration()));
         durationSwimmingText.setText(Utility.getPeriodString(summary.getSwimDuration()));
         durationCyclingText.setText(Utility.getPeriodString(summary.getCycleDuration()));

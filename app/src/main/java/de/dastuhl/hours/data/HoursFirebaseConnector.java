@@ -201,36 +201,66 @@ public class HoursFirebaseConnector {
         return null;
     }
 
-    public void saveDailySummary(DailySessionsSummary sessionsSummary) {
+    public void saveDailySummary(final DailySessionsSummary sessionsSummary) {
         if (sessionsSummary != null) {
-            saveSession(sessionsSummary, getUserDailySummaries());
+            updateOrSave(sessionsSummary, getUserDailySummaries());
         }
     }
 
     private void saveWeeklySummaries(Collection<WeeklySessionsSummary> summaries) {
         for (WeeklySessionsSummary summary : summaries) {
-            saveSession(summary, getUserWeeklySummaries());
+            updateOrSave(summary, getUserWeeklySummaries());
         }
     }
 
     private void saveMonthlySummaries(Collection<MonthlySessionsSummary> summaries) {
         for (MonthlySessionsSummary summary : summaries) {
-            saveSession(summary, getUserMonthlySummaries());
+            updateOrSave(summary, getUserMonthlySummaries());
         }
     }
 
     private void saveYearlySummaries(Collection<YearlySessionsSummary> summaries) {
         for (YearlySessionsSummary summary : summaries) {
-            saveSession(summary, getUserYearlySummaries());
+            updateOrSave(summary, getUserYearlySummaries());
         }
     }
 
-    private void saveSession(SessionsSummary sessionsSummary, Firebase ref) {
+    private void updateOrSave(final SessionsSummary sessionsSummary, final Firebase ref) {
+        ref
+                .limitToFirst(1)
+                .orderByPriority()
+                .startAt(sessionsSummary.createPriority())
+                .endAt(sessionsSummary.createPriority())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot != null && dataSnapshot.getValue() != null) {
+                            // update
+                            Firebase summaryFromDatabase =
+                                    dataSnapshot.getChildren().iterator().next().getRef();
+                            updateExistingSummary(sessionsSummary, summaryFromDatabase);
+                        } else {
+                            // persist
+                            saveNewSummary(sessionsSummary, ref);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(FirebaseError firebaseError) {
+
+                    }
+                });
+    }
+
+    private void saveNewSummary(SessionsSummary sessionsSummary, Firebase ref) {
         if (sessionsSummary != null) {
-            String key = sessionsSummary.createPeriodString();
-            final Firebase newSessionRef = ref.child(key);
-            newSessionRef.setValue(sessionsSummary, sessionsSummary.createPriority());
+            final Firebase newSummary = ref.push();
+            newSummary.setValue(sessionsSummary, sessionsSummary.createPriority());
         }
+    }
+
+    private void updateExistingSummary(SessionsSummary sessionsSummary, Firebase ref) {
+        ref.setValue(sessionsSummary, sessionsSummary.createPriority());
     }
 
     private void updateSummaries(final DataSnapshot dataSnapshot) {

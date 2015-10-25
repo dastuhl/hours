@@ -1,8 +1,5 @@
 package de.dastuhl.hours.data.model;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 /**
  * Created by Martin on 24.09.2015.
  */
@@ -23,7 +20,7 @@ public class YearlySessionsSummary extends CumulatedSessionsSummary {
                 dailySummary.getSwimDuration(), dailySummary.getCycleDuration(), dailySummary.getRunDuration(), dailySummary.getAthleticDuration());
     }
 
-    public String createPeriodString() {
+    String createPeriodString() {
         String result = String.valueOf(getYear());
         if (result.length() != 4) {
             throw new IllegalStateException("invalid Date " + result);

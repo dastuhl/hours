@@ -22,7 +22,7 @@ public class WeeklySessionsSummary extends CumulatedSessionsSummary {
                 dailySummary.getSwimDuration(), dailySummary.getCycleDuration(), dailySummary.getRunDuration(), dailySummary.getAthleticDuration());
     }
 
-    public String createPeriodString() {
+    String createPeriodString() {
         StringBuilder builder = new StringBuilder();
         builder.append(getYear()).append("-").append(Utility.twoFigure(getWeekOfYear()));
         String result = builder.toString();

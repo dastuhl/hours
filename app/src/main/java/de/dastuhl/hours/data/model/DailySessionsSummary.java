@@ -16,7 +16,7 @@ public class DailySessionsSummary extends SessionsSummary {
     public DailySessionsSummary(Integer pYear, Integer pMonth, Integer pWeekOfYear,
                                 Integer pDayOfYear, Integer pSwimDuration, Integer pCycleDuration,
                                 Integer pRunDuration, Integer pAthleticDuration) {
-        super(pYear, pMonth,  pWeekOfYear, pDayOfYear, pSwimDuration, pCycleDuration, pRunDuration, pAthleticDuration);
+        super(pYear, pMonth, pWeekOfYear, pDayOfYear, pSwimDuration, pCycleDuration, pRunDuration, pAthleticDuration);
     }
 
     public DailySessionsSummary(Calendar sessionDate, Integer pSwimDuration, Integer pCycleDuration,
@@ -38,7 +38,7 @@ public class DailySessionsSummary extends SessionsSummary {
                 summary.getSwimDuration(), summary.getCycleDuration(), summary.getRunDuration(), summary.getAthleticDuration());
     }
 
-    public String createPeriodString() {
+    String createPeriodString() {
         StringBuilder builder = new StringBuilder();
         builder.append(getYear()).append("-").append(Utility.twoFigure(getMonth())).append("-").append(Utility.twoFigure(getDayOfMonth()));
         String result = builder.toString();

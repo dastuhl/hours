@@ -21,7 +21,7 @@ public class MonthlySessionsSummary extends CumulatedSessionsSummary {
                 dailySummary.getSwimDuration(), dailySummary.getCycleDuration(), dailySummary.getRunDuration(), dailySummary.getAthleticDuration());
     }
 
-    public String createPeriodString() {
+    String createPeriodString() {
         StringBuilder builder = new StringBuilder();
         builder.append(getYear()).append("-").append(Utility.twoFigure(getMonth()));
         String result = builder.toString();

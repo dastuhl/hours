@@ -9,25 +9,24 @@
               android:paddingBottom="0dp"
               android:minHeight="?android:attr/listPreferredItemHeightSmall" >
 
-    <LinearLayout
+    <GridLayout
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        android:columnCount="1"
         android:padding="8dp">
         <TextView
             android:id="@+id/list_item_date_textview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|top"
             android:gravity="center"
             />
         <TextView
             android:id="@+id/list_item_total_textview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|top"
             android:gravity="center"
             />
 
-    </LinearLayout>
+    </GridLayout>
 
     <com.github.mikephil.charting.charts.HorizontalBarChart
         android:id="@+id/list_item_chart_view"

@@ -6,7 +6,18 @@ import android.preference.PreferenceManager;
 
 import com.google.common.collect.Lists;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
+
+import de.dastuhl.hours.data.model.DailySessionsSummary;
+import de.dastuhl.hours.data.model.MonthlySessionsSummary;
+import de.dastuhl.hours.data.model.SessionsSummary;
+import de.dastuhl.hours.data.model.WeeklySessionsSummary;
+import de.dastuhl.hours.data.model.YearlySessionsSummary;
 
 /**
  * Created by Martin on 18.10.2015.
@@ -25,8 +36,7 @@ public class Utility {
             min = minutes % 60;
         }
 
-        return new StringBuilder().append(twoFigure(hours)).append(":").append(twoFigure(min))
-                .toString();
+        return twoFigure(hours) + ":" + twoFigure(min);
     }
 
     public static String twoFigure(int number) {
@@ -49,26 +59,71 @@ public class Utility {
 
     public static float getPreferredMaxValueDays(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        String value=  prefs.getString(context.getString(R.string.pref_max_value_days_key), "480");
+        String value = prefs.getString(context.getString(R.string.pref_max_value_days_key), "480");
         return Float.valueOf(value);
     }
 
     public static float getPreferredMaxValueWeeks(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        String value=  prefs.getString(context.getString(R.string.pref_max_value_weeks_key), "1800");
+        String value = prefs.getString(context.getString(R.string.pref_max_value_weeks_key), "1800");
         return Float.valueOf(value);
     }
 
     public static float getPreferredMaxValueMonths(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        String value=  prefs.getString(context.getString(R.string.pref_max_value_months_key), "4800");
+        String value = prefs.getString(context.getString(R.string.pref_max_value_months_key), "4800");
         return Float.valueOf(value);
     }
 
     public static float getPreferredMaxValueYears(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        String value=  prefs.getString(context.getString(R.string.pref_max_value_years_key), "60000");
+        String value = prefs.getString(context.getString(R.string.pref_max_value_years_key), "60000");
         return Float.valueOf(value);
+    }
+
+    public static String createFriendlyPeriodString(Context context, SessionsSummary summary) {
+        if (summary instanceof DailySessionsSummary) {
+            return createFriendlyPeriodString((DailySessionsSummary) summary);
+        } else if (summary instanceof WeeklySessionsSummary) {
+            return createFriendlyPeriodString(context, (WeeklySessionsSummary) summary);
+        } else if (summary instanceof MonthlySessionsSummary) {
+            return createFriendlyPeriodString((MonthlySessionsSummary) summary);
+        } else if (summary instanceof YearlySessionsSummary) {
+            return createFriendlyPeriodString((YearlySessionsSummary) summary);
+        }
+        return "";
+    }
+
+    public static String createFriendlyPeriodString(DailySessionsSummary summary) {
+
+        Calendar cal = Calendar.getInstance();
+        cal.set(summary.getYear(), summary.getMonth() - 1, summary.getDayOfMonth());
+        String result;
+        DateFormat format = SimpleDateFormat.getDateInstance();
+        format.setTimeZone(cal.getTimeZone());
+        result = format.format(cal.getTime());
+
+        return result;
+    }
+
+    public static String createFriendlyPeriodString(Context context, WeeklySessionsSummary summary) {
+        return context.getString(R.string.week) + " " + summary.getWeekOfYear() + " " + summary.getYear();
+    }
+
+    public static String createFriendlyPeriodString(MonthlySessionsSummary summary) {
+        Calendar cal = new GregorianCalendar();
+        cal.set(summary.getYear(), summary.getMonth() - 1, 1);
+
+        String result;
+        SimpleDateFormat format = new SimpleDateFormat("MMM yyyy", Locale.getDefault());
+        format.setTimeZone(cal.getTimeZone());
+        result = format.format(cal.getTime());
+
+        return result;
+    }
+
+    public static String createFriendlyPeriodString(YearlySessionsSummary summary) {
+        return String.valueOf(summary.getYear());
     }
 
 }

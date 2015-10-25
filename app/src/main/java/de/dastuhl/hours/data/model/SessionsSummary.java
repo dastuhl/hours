@@ -100,7 +100,7 @@ public class SessionsSummary implements Parcelable {
         swimDuration = pSwimDuration;
     }
 
-    public String createPeriodString() {
+    String createPeriodString() {
         return "";
     }
 
