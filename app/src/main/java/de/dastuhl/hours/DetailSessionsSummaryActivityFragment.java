@@ -282,6 +282,12 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
         durationCyclingText.setText(Utility.getDurationString(summary.getCycleDuration()));
         durationRunningText.setText(Utility.getDurationString(summary.getRunDuration()));
 
+        dailySummaryDateText.setEnabled(editMode.isEditable());
+        durationAthleticText.setEnabled(editMode.isEditable());
+        durationCyclingText.setEnabled(editMode.isEditable());
+        durationRunningText.setEnabled(editMode.isEditable());
+        durationSwimmingText.setEnabled(editMode.isEditable());
+
         addChartData();
     }
 
