@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -135,6 +137,7 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
                 editMode = EditMode.NEW;
                 updateUI();
             } else {
+                // see <code>onDataLoaded</code>
                 firebaseConnector.loadSessionsSummary(url, this);
             }
         }
@@ -269,13 +272,27 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
     }
 
     private void updateUI() {
-        dailySummaryDateText.setText(Utility.createFriendlyPeriodString(getActivity(), summary));
-        durationAthleticText.setText(Utility.getPeriodString(summary.getAthleticDuration()));
-        durationSwimmingText.setText(Utility.getPeriodString(summary.getSwimDuration()));
-        durationCyclingText.setText(Utility.getPeriodString(summary.getCycleDuration()));
-        durationRunningText.setText(Utility.getPeriodString(summary.getRunDuration()));
+        changeTitle();
+        String periodString = Utility.getDayName(getActivity(), summary);
+        dailySummaryDateText.setText(periodString + " "
+                + Utility.createFriendlyPeriodString(getActivity(), summary)
+                + ": " + Utility.getDurationString(summary.computeTotals()));
+        durationAthleticText.setText(Utility.getDurationString(summary.getAthleticDuration()));
+        durationSwimmingText.setText(Utility.getDurationString(summary.getSwimDuration()));
+        durationCyclingText.setText(Utility.getDurationString(summary.getCycleDuration()));
+        durationRunningText.setText(Utility.getDurationString(summary.getRunDuration()));
 
         addChartData();
+    }
+
+    private void changeTitle() {
+        if (summary != null) {
+            getActivity().setTitle(Utility.getTitleFromSummary(getActivity(), summary));
+        }
+    }
+
+    private ActionBar getActionBar() {
+        return ((AppCompatActivity) getActivity()).getSupportActionBar();
     }
 
     private void definePieChart() {

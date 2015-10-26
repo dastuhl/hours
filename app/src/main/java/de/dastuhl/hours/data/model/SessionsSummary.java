@@ -1,12 +1,9 @@
 package de.dastuhl.hours.data.model;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 /**
  * Created by Martin on 24.09.2015.
  */
-public class SessionsSummary implements Parcelable {
+public class SessionsSummary {
 
     public static final String YEAR_PROPERTY = "year";
 
@@ -106,7 +103,7 @@ public class SessionsSummary implements Parcelable {
 
     public Long createPriority() {
         String prio = createPeriodString();
-        prio = prio.replaceAll("-", "");
+        prio = prio.replaceAll("\\D+", "");
         return Long.valueOf(prio) * -1;
     }
 
@@ -118,59 +115,4 @@ public class SessionsSummary implements Parcelable {
         return total;
     }
 
-    /*
-     * Parcelable
-     */
-    public SessionsSummary(Parcel in) {
-        this.year = (Integer) in.readValue(null);
-        this.month = (Integer) in.readValue(null);
-        this.weekOfYear = (Integer) in.readValue(null);
-        this.dayOfMonth = (Integer) in.readValue(null);
-        this.athleticDuration = (Integer) in.readValue(null);
-        this.swimDuration = (Integer) in.readValue(null);
-        this.cycleDuration = (Integer) in.readValue(null);
-        this.runDuration = (Integer) in.readValue(null);
-    }
-
-    /**
-     * Describe the kinds of special objects contained in this Parcelable's
-     * marshalled representation.
-     *
-     * @return a bitmask indicating the set of special object types marshalled
-     * by the Parcelable.
-     */
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    /**
-     * Flatten this object in to a Parcel.
-     *
-     * @param dest  The Parcel in which the object should be written.
-     * @param flags Additional flags about how the object should be written.
-     *              May be 0 or {@link #PARCELABLE_WRITE_RETURN_VALUE}.
-     */
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeValue(this.year);
-        dest.writeValue(this.month);
-        dest.writeValue(this.weekOfYear);
-        dest.writeValue(this.dayOfMonth);
-        dest.writeValue(this.athleticDuration);
-        dest.writeValue(this.swimDuration);
-        dest.writeValue(this.cycleDuration);
-        dest.writeValue(this.runDuration);
-    }
-
-    public static final Parcelable.Creator<SessionsSummary> CREATOR
-            = new Parcelable.Creator<SessionsSummary>() {
-        public SessionsSummary createFromParcel(Parcel in) {
-            return new SessionsSummary(in);
-        }
-
-        public SessionsSummary[] newArray(int size) {
-            return new SessionsSummary[size];
-        }
-    };
 }

@@ -3,6 +3,7 @@ package de.dastuhl.hours;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 
 import com.google.common.collect.Lists;
 
@@ -28,7 +29,7 @@ public class Utility {
 
     }
 
-    public static String getPeriodString(Integer minutes) {
+    public static String getDurationString(Integer minutes) {
         int hours = 0;
         int min = 0;
         if (minutes != null) {
@@ -96,14 +97,21 @@ public class Utility {
 
     public static String createFriendlyPeriodString(DailySessionsSummary summary) {
 
-        Calendar cal = Calendar.getInstance();
-        cal.set(summary.getYear(), summary.getMonth() - 1, summary.getDayOfMonth());
+        Calendar cal = getCalendarFromDailySessionsSummary(summary);
         String result;
+
         DateFormat format = SimpleDateFormat.getDateInstance();
         format.setTimeZone(cal.getTimeZone());
         result = format.format(cal.getTime());
 
         return result;
+    }
+
+    @NonNull
+    private static Calendar getCalendarFromDailySessionsSummary(DailySessionsSummary summary) {
+        Calendar cal = Calendar.getInstance();
+        cal.set(summary.getYear(), summary.getMonth() - 1, summary.getDayOfMonth());
+        return cal;
     }
 
     public static String createFriendlyPeriodString(Context context, WeeklySessionsSummary summary) {
@@ -126,4 +134,35 @@ public class Utility {
         return String.valueOf(summary.getYear());
     }
 
+    public static String getTitleFromSummary(Context context, SessionsSummary summary) {
+        if (summary instanceof DailySessionsSummary) {
+            return context.getString(R.string.daily_summary);
+        } else if (summary instanceof WeeklySessionsSummary) {
+            return context.getString(R.string.weekly_summary);
+        } else if (summary instanceof MonthlySessionsSummary) {
+            return context.getString(R.string.monthly_summary);
+        } else if (summary instanceof YearlySessionsSummary) {
+            return context.getString(R.string.yearly_summary);
+        }
+        return "";
+    }
+
+    public static String getDayName(Context context, SessionsSummary summary) {
+        if (summary instanceof DailySessionsSummary) {
+            Calendar cal = getCalendarFromDailySessionsSummary((DailySessionsSummary) summary);
+            Calendar current = Calendar.getInstance();
+
+            if (cal.get(Calendar.YEAR) == current.get(Calendar.YEAR)) {
+                if (cal.get(Calendar.DAY_OF_YEAR) == current.get(Calendar.DAY_OF_YEAR)) {
+                    return context.getString(R.string.today);
+                } else if (cal.get(Calendar.DAY_OF_YEAR) == current.get(Calendar.DAY_OF_YEAR) - 1) {
+                    return context.getString(R.string.yesterday);
+                }
+            }
+            SimpleDateFormat format = new SimpleDateFormat("EEEE", Locale.getDefault());
+            format.setTimeZone(cal.getTimeZone());
+            return format.format(cal.getTime());
+        }
+        return "";
+    }
 }

@@ -3,7 +3,7 @@ package de.dastuhl.hours.data.model;
 /**
  * Created by Martin on 24.09.2015.
  */
-public class CumulatedSessionsSummary extends SessionsSummary {
+public abstract class CumulatedSessionsSummary extends SessionsSummary {
 
     public CumulatedSessionsSummary() {
 

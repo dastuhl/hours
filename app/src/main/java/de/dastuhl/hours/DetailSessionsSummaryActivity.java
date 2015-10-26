@@ -2,13 +2,13 @@ package de.dastuhl.hours;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 
-public class DetailSessionsSummaryActivity extends ActionBarActivity {
+public class DetailSessionsSummaryActivity extends AppCompatActivity {
 
     public static void start(Context context, String userId, String url) {
         Intent detailSummaryIntent = new Intent(context, DetailSessionsSummaryActivity.class);

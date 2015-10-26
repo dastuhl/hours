@@ -123,5 +123,10 @@
     <string name="register_button_text">register</string>
     <string name="today">Today</string>
     <string name="week">Week</string>
+    <string name="daily_summary">daily summary</string>
+    <string name="monthly_summary">monthly summary</string>
+    <string name="weekly_summary">weekly summary</string>
+    <string name="yearly_summary">yearly summary</string>
+    <string name="yesterday">Yesterday</string>
 
 </resources>

@@ -165,7 +165,7 @@ public class HoursFirebaseConnector {
 
     public void loadSessionsSummary(String ref, final SessionsSummaryLoader listener) {
         Firebase summaryRef = new Firebase(ref);
-        final Class<? extends SessionsSummary> clazz = getClassFromRef(ref);
+        final Class<? extends SessionsSummary> clazz = getClassFromUrl(ref);
         if (clazz != null && summaryRef.getAuth() != null && userID.equals(summaryRef.getAuth().getUid())) {
             summaryRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -188,7 +188,7 @@ public class HoursFirebaseConnector {
         }
     }
 
-    private Class<? extends SessionsSummary> getClassFromRef(String ref) {
+    private Class<? extends SessionsSummary> getClassFromUrl(String ref) {
         if (ref.contains(SUMMARIES_DAILY)) {
             return DailySessionsSummary.class;
         } else if (ref.contains(SUMMARIES_WEEKLY)) {

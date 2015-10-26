@@ -14,11 +14,11 @@ import de.dastuhl.hours.Utility;
 public class TimeFormatter implements ValueFormatter, YAxisValueFormatter {
     @Override
     public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
-        return Utility.getPeriodString((int) value);
+        return Utility.getDurationString((int) value);
     }
 
     @Override
     public String getFormattedValue(float value, YAxis yAxis) {
-        return Utility.getPeriodString((int) value);
+        return Utility.getDurationString((int) value);
     }
 }
