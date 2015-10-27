@@ -5,6 +5,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
@@ -20,6 +21,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.github.mikephil.charting.charts.PieChart;
@@ -82,19 +85,28 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
     EditText dailySummaryDateText;
 
     @Bind(R.id.session_duration_swim)
-    EditText durationSwimmingText;
+    TextView durationSwimmingText;
 
     @Bind(R.id.session_duration_cycle)
-    EditText durationCyclingText;
+    TextView durationCyclingText;
 
     @Bind(R.id.session_duration_run)
-    EditText durationRunningText;
+    TextView durationRunningText;
 
     @Bind(R.id.session_duration_athletic)
-    EditText durationAthleticText;
+    TextView durationAthleticText;
 
     @Bind(R.id.details_pie_chart_view)
     PieChart chart;
+
+    @Bind(R.id.swim_button)
+    ImageButton swimButton;
+    @Bind(R.id.cycle_button)
+    ImageButton cycleButton;
+    @Bind(R.id.run_button)
+    ImageButton runButton;
+    @Bind(R.id.athletic_button)
+    ImageButton athleticButton;
 
     private SessionsSummary summary;
     private EditMode editMode;
@@ -172,28 +184,28 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
         }
     }
 
-    @OnClick(R.id.session_duration_swim)
+    @OnClick(R.id.swim_button)
     void onDurationSwimmingClicked() {
         if (editMode.isEditable()) {
             openDialog(TIME_DIALOG_SWIM);
         }
     }
 
-    @OnClick(R.id.session_duration_cycle)
+    @OnClick(R.id.cycle_button)
     void onDurationCyclingClicked() {
         if (editMode.isEditable()) {
             openDialog(TIME_DIALOG_CYCLE);
         }
     }
 
-    @OnClick(R.id.session_duration_run)
+    @OnClick(R.id.run_button)
     void onDurationRunningClicked() {
         if (editMode.isEditable()) {
             openDialog(TIME_DIALOG_RUN);
         }
     }
 
-    @OnClick(R.id.session_duration_athletic)
+    @OnClick(R.id.athletic_button)
     void onDurationAthleticClicked() {
         if (editMode.isEditable()) {
             openDialog(TIME_DIALOG_ATHLETIC);
@@ -275,18 +287,17 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
         changeTitle();
         String periodString = Utility.getDayName(getActivity(), summary);
         dailySummaryDateText.setText(periodString + " "
-                + Utility.createFriendlyPeriodString(getActivity(), summary)
-                + ": " + Utility.getDurationString(summary.computeTotals()));
+                + Utility.createFriendlyPeriodString(getActivity(), summary));
         durationAthleticText.setText(Utility.getDurationString(summary.getAthleticDuration()));
         durationSwimmingText.setText(Utility.getDurationString(summary.getSwimDuration()));
         durationCyclingText.setText(Utility.getDurationString(summary.getCycleDuration()));
         durationRunningText.setText(Utility.getDurationString(summary.getRunDuration()));
 
-        dailySummaryDateText.setEnabled(editMode.isEditable());
-        durationAthleticText.setEnabled(editMode.isEditable());
-        durationCyclingText.setEnabled(editMode.isEditable());
-        durationRunningText.setEnabled(editMode.isEditable());
-        durationSwimmingText.setEnabled(editMode.isEditable());
+        dailySummaryDateText.setClickable(editMode.isEditable());
+        swimButton.setEnabled(editMode.isEditable());
+        cycleButton.setEnabled(editMode.isEditable());
+        runButton.setEnabled(editMode.isEditable());
+        athleticButton.setEnabled(editMode.isEditable());
 
         addChartData();
     }
@@ -304,7 +315,7 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
     private void definePieChart() {
         chart.setUsePercentValues(true);
         chart.setDescription("");
-        chart.setDrawHoleEnabled(false);
+        chart.setDrawHoleEnabled(true);
         chart.setHoleColorTransparent(true);
         chart.getLegend().setEnabled(false);
         chart.setClickable(false);
@@ -337,15 +348,22 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
 
         }
 
+        String total = Utility.getDurationString(summary.computeTotals());
+
         PieDataSet dataset = new PieDataSet(yVals1, getString(R.string.timeShare));
         dataset.setColors(chartColors);
+        dataset.setHighlightEnabled(false);
 
         PieData data = new PieData(xVals, dataset);
         data.setValueFormatter(new PercentFormatter());
         data.setValueTextSize(12f);
+        data.setHighlightEnabled(false);
 
         chart.setData(data);
         chart.highlightValues(null);
+        chart.setCenterTextSize(20f);
+        chart.setCenterTextTypeface(Typeface.DEFAULT_BOLD);
+        chart.setCenterText(total);
 
         chart.invalidate();
     }
