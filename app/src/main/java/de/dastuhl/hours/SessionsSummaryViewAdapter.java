@@ -57,7 +57,7 @@ public class SessionsSummaryViewAdapter extends FirebaseRecyclerViewAdapter<Sess
     public void populateViewHolder(SessionListViewHolder pSessionListViewHolder, SessionsSummary pSessionsSummary) {
 
         pSessionListViewHolder.date.setText(Utility.createFriendlyPeriodString(context, pSessionsSummary));
-        pSessionListViewHolder.total.setText(Utility.getDurationString(pSessionsSummary.computeTotals()));
+        pSessionListViewHolder.total.setText(Utility.getDurationString(pSessionsSummary.computeTotal()));
 
         if (Utility.getPreferredBarChartStyle(context)) {
             createStackedChart(pSessionListViewHolder, pSessionsSummary);
@@ -68,7 +68,7 @@ public class SessionsSummaryViewAdapter extends FirebaseRecyclerViewAdapter<Sess
 
     private void createTotalChart(SessionListViewHolder pSessionListViewHolder, SessionsSummary pSessionsSummary) {
         float maxValueYAxis = getMaxValueYAxis(pSessionsSummary);
-        Integer total = pSessionsSummary.computeTotals();
+        Integer total = pSessionsSummary.computeTotal();
 
         List<BarDataSet> dataSets = Lists.newArrayList();
         BarEntry totalEntry = new BarEntry(total, 0);

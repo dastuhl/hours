@@ -348,7 +348,7 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
 
         }
 
-        String total = Utility.getDurationString(summary.computeTotals());
+        String total = Utility.getDurationString(summary.computeTotal());
 
         PieDataSet dataset = new PieDataSet(yVals1, getString(R.string.timeShare));
         dataset.setColors(chartColors);

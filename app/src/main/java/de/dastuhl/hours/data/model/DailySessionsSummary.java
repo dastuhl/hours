@@ -1,13 +1,14 @@
 package de.dastuhl.hours.data.model;
 
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import de.dastuhl.hours.Utility;
 
 /**
  * Created by Martin on 24.09.2015.
  */
-public class DailySessionsSummary extends SessionsSummary {
+public class DailySessionsSummary extends SessionsSummary implements Comparable<DailySessionsSummary> {
 
     public DailySessionsSummary() {
 
@@ -24,6 +25,11 @@ public class DailySessionsSummary extends SessionsSummary {
         this(sessionDate.get(Calendar.YEAR), sessionDate.get(Calendar.MONTH) + 1, sessionDate.get(Calendar.WEEK_OF_YEAR), sessionDate.get(Calendar.DAY_OF_MONTH),
                 pSwimDuration, pCycleDuration, pRunDuration, pAthleticDuration);
     }
+
+    public DailySessionsSummary(Calendar sessionDate) {
+        this(sessionDate, 0, 0, 0, 0);
+    }
+
 
     public static DailySessionsSummary newInstanceForToday() {
         Calendar cal = Calendar.getInstance();
@@ -60,4 +66,12 @@ public class DailySessionsSummary extends SessionsSummary {
         return new StringBuilder().append(getYear()).append(getWeekOfYear()).toString();
     }
 
+    public Calendar buildCalendar() {
+        return new GregorianCalendar(getYear(), getMonth() - 1, getDayOfMonth(), 0, 0, 0);
+    }
+
+    @Override
+    public int compareTo(DailySessionsSummary another) {
+        return this.buildCalendar().compareTo(another.buildCalendar());
+    }
 }

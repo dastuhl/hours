@@ -7,11 +7,16 @@ import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import de.dastuhl.hours.data.model.DailySessionsSummary;
 import de.dastuhl.hours.data.model.MonthlySessionsSummary;
@@ -42,7 +47,7 @@ public class HoursFirebaseConnector {
     private Firebase userYearlySummaries;
     private Firebase userRef;
 
-    public HoursFirebaseConnector (String userId, Context context) {
+    public HoursFirebaseConnector(String userId, Context context) {
         this.userID = userId;
         this.context = context;
     }
@@ -73,7 +78,12 @@ public class HoursFirebaseConnector {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 if (summariesInitialized) {
-                    updateSummaries(dataSnapshot.getValue(SessionsSummary.class));
+                    // initial Loading done
+                    SessionsSummary added = dataSnapshot.getValue(SessionsSummary.class);
+                    Integer total = added.computeTotal();
+                    if (total != null && total > 0) {
+                        updateSummaries(added);
+                    }
                 }
             }
 
@@ -86,7 +96,7 @@ public class HoursFirebaseConnector {
                         .addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
-                                HoursFirebaseConnector.this.updateSummaries(dataSnapshot);
+                                HoursFirebaseConnector.this.updateCummulatedSummaries(dataSnapshot);
                             }
 
                             @Override
@@ -99,7 +109,8 @@ public class HoursFirebaseConnector {
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
                 if (summariesInitialized) {
-                    updateSummaries(dataSnapshot.getValue(SessionsSummary.class));
+                    SessionsSummary changed = dataSnapshot.getValue(SessionsSummary.class);
+                    updateSummaries(changed);
                 }
             }
 
@@ -124,7 +135,8 @@ public class HoursFirebaseConnector {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (initCumulatedSummaries) {
-                    updateSummaries(dataSnapshot);
+                    updateCummulatedSummaries(dataSnapshot);
+                    addMissingDailySummaries(dataSnapshot);
                 }
                 summariesInitialized = true;
             }
@@ -193,7 +205,7 @@ public class HoursFirebaseConnector {
             return DailySessionsSummary.class;
         } else if (ref.contains(SUMMARIES_WEEKLY)) {
             return WeeklySessionsSummary.class;
-        } else if(ref.contains(SUMMARIES_MONTHLY)) {
+        } else if (ref.contains(SUMMARIES_MONTHLY)) {
             return MonthlySessionsSummary.class;
         } else if (ref.contains(SUMMARIES_YEARLY)) {
             return YearlySessionsSummary.class;
@@ -203,34 +215,78 @@ public class HoursFirebaseConnector {
 
     public void saveDailySummary(final DailySessionsSummary sessionsSummary) {
         if (sessionsSummary != null) {
-            updateOrSave(sessionsSummary, getUserDailySummaries());
+            updateOrSave(sessionsSummary, getUserDailySummaries(),
+                    new Firebase.CompletionListener() {
+                        @Override
+                        public void onComplete(FirebaseError firebaseError, Firebase firebase) {
+                            getUserDailySummaries().addListenerForSingleValueEvent(
+                                    new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                            addMissingDailySummaries(dataSnapshot);
+                                        }
+
+                                        @Override
+                                        public void onCancelled(FirebaseError firebaseError) {
+                                        }
+                                    });
+                        }
+                    });
+        }
+    }
+
+    private void addMissingDailySummaries(DataSnapshot userDailySummaries) {
+        Set<DailySessionsSummary> missingSummaries = Sets.newHashSet();
+
+        List<DataSnapshot> list = ImmutableList.copyOf(userDailySummaries.getChildren());
+        if (list.size() > 1) {
+            Calendar cal = list.get(0).getValue(DailySessionsSummary.class).buildCalendar();
+
+            for (DataSnapshot snapshot : list) {
+                DailySessionsSummary summary = snapshot.getValue(DailySessionsSummary.class);
+
+                DailySessionsSummary newSummary = new DailySessionsSummary(cal);
+                while (newSummary.compareTo(summary) > 0) {
+                    missingSummaries.add(newSummary);
+                    cal.add(Calendar.DATE, -1);
+                    newSummary = new DailySessionsSummary(cal);
+                }
+                cal.add(Calendar.DATE, -1);
+
+            }
+
+            for (DailySessionsSummary ds : missingSummaries) {
+                getUserDailySummaries().push().setValue(ds, ds.createPriority());
+            }
         }
     }
 
     private void saveWeeklySummaries(Collection<WeeklySessionsSummary> summaries) {
         for (WeeklySessionsSummary summary : summaries) {
-            updateOrSave(summary, getUserWeeklySummaries());
+            updateOrSave(summary, getUserWeeklySummaries(), null);
         }
     }
 
     private void saveMonthlySummaries(Collection<MonthlySessionsSummary> summaries) {
         for (MonthlySessionsSummary summary : summaries) {
-            updateOrSave(summary, getUserMonthlySummaries());
+            updateOrSave(summary, getUserMonthlySummaries(), null);
         }
     }
 
     private void saveYearlySummaries(Collection<YearlySessionsSummary> summaries) {
         for (YearlySessionsSummary summary : summaries) {
-            updateOrSave(summary, getUserYearlySummaries());
+            updateOrSave(summary, getUserYearlySummaries(), null);
         }
     }
 
-    private void updateOrSave(final SessionsSummary sessionsSummary, final Firebase ref) {
+    private void updateOrSave(final SessionsSummary sessionsSummary, final Firebase ref,
+                              final Firebase.CompletionListener listener) {
+        Long prio = sessionsSummary.createPriority();
         ref
                 .limitToFirst(1)
                 .orderByPriority()
-                .startAt(sessionsSummary.createPriority())
-                .endAt(sessionsSummary.createPriority())
+                .startAt(prio)
+                .endAt(prio)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -238,10 +294,10 @@ public class HoursFirebaseConnector {
                             // update
                             Firebase summaryFromDatabase =
                                     dataSnapshot.getChildren().iterator().next().getRef();
-                            updateExistingSummary(sessionsSummary, summaryFromDatabase);
+                            updateExistingSummary(sessionsSummary, summaryFromDatabase, listener);
                         } else {
                             // persist
-                            saveNewSummary(sessionsSummary, ref);
+                            saveNewSummary(sessionsSummary, ref, listener);
                         }
                     }
 
@@ -252,18 +308,28 @@ public class HoursFirebaseConnector {
                 });
     }
 
-    private void saveNewSummary(SessionsSummary sessionsSummary, Firebase ref) {
+    private void saveNewSummary(SessionsSummary sessionsSummary, Firebase ref,
+                                Firebase.CompletionListener listener) {
         if (sessionsSummary != null) {
             final Firebase newSummary = ref.push();
-            newSummary.setValue(sessionsSummary, sessionsSummary.createPriority());
+            if (listener != null) {
+                newSummary.setValue(sessionsSummary, sessionsSummary.createPriority(), listener);
+            } else {
+                newSummary.setValue(sessionsSummary, sessionsSummary.createPriority());
+            }
         }
     }
 
-    private void updateExistingSummary(SessionsSummary sessionsSummary, Firebase ref) {
-        ref.setValue(sessionsSummary, sessionsSummary.createPriority());
+    private void updateExistingSummary(SessionsSummary sessionsSummary, Firebase ref,
+                                       Firebase.CompletionListener listener) {
+        if (listener != null) {
+            ref.setValue(sessionsSummary, sessionsSummary.createPriority(), listener);
+        } else {
+            ref.setValue(sessionsSummary, sessionsSummary.createPriority());
+        }
     }
 
-    private void updateSummaries(final DataSnapshot dataSnapshot) {
+    private void updateCummulatedSummaries(final DataSnapshot dataSnapshot) {
         Map<String, WeeklySessionsSummary> weeklySummaries = Maps.newHashMap();
         Map<String, MonthlySessionsSummary> monthlySummaries = Maps.newHashMap();
         Map<String, YearlySessionsSummary> yearlySummaries = Maps.newHashMap();
@@ -306,8 +372,9 @@ public class HoursFirebaseConnector {
         return summariesInitialized;
     }
 
-    public static interface SessionsSummaryLoader {
+    public interface SessionsSummaryLoader {
         void onDataLoaded(Collection<SessionsSummary> sessionsSummaries);
+
         void onLoadingFailed();
     }
 }
