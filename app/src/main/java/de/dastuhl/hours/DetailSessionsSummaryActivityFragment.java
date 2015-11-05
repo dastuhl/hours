@@ -303,7 +303,7 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
     }
 
     private void changeTitle() {
-        if (summary != null) {
+        if (summary != null && getActivity() != null) {
             getActivity().setTitle(Utility.getTitleFromSummary(getActivity(), summary));
         }
     }
@@ -322,6 +322,9 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
     }
 
     private void addChartData() {
+        if (!isAdded()) {
+            return;
+        }
         List<Integer> colors = Utility.getSportsColors(getActivity());
         List<Integer> chartColors = Lists.newArrayList();
         ArrayList<Entry> yVals1 = Lists.newArrayList();

@@ -10,6 +10,7 @@ import com.google.common.collect.Lists;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
@@ -47,36 +48,54 @@ public class Utility {
     }
 
     public static List<Integer> getSportsColors(Context context) {
-        return Lists.newArrayList(context.getResources().getColor(R.color.color_swim),
-                context.getResources().getColor(R.color.color_cycle),
-                context.getResources().getColor(R.color.color_run),
-                context.getResources().getColor(R.color.color_athletic));
+        if (context != null) {
+            return Lists.newArrayList(context.getResources().getColor(R.color.color_swim),
+                    context.getResources().getColor(R.color.color_cycle),
+                    context.getResources().getColor(R.color.color_run),
+                    context.getResources().getColor(R.color.color_athletic));
+        }
+        return Collections.emptyList();
     }
 
     public static boolean getPreferredBarChartStyle(Context context) {
+        if (context == null) {
+            return false;
+        }
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         return prefs.getBoolean(context.getString(R.string.pref_barchart_key), true);
     }
 
     public static float getPreferredMaxValueDays(Context context) {
+        if (context == null) {
+            return 0;
+        }
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String value = prefs.getString(context.getString(R.string.pref_max_value_days_key), "480");
         return Float.valueOf(value);
     }
 
     public static float getPreferredMaxValueWeeks(Context context) {
+        if (context == null) {
+            return 0;
+        }
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String value = prefs.getString(context.getString(R.string.pref_max_value_weeks_key), "1800");
         return Float.valueOf(value);
     }
 
     public static float getPreferredMaxValueMonths(Context context) {
+        if (context == null) {
+            return 0;
+        }
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String value = prefs.getString(context.getString(R.string.pref_max_value_months_key), "4800");
         return Float.valueOf(value);
     }
 
     public static float getPreferredMaxValueYears(Context context) {
+        if (context == null) {
+            return 0;
+        }
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String value = prefs.getString(context.getString(R.string.pref_max_value_years_key), "60000");
         return Float.valueOf(value);
@@ -115,6 +134,9 @@ public class Utility {
     }
 
     public static String createFriendlyPeriodString(Context context, WeeklySessionsSummary summary) {
+        if (context == null) {
+            return "";
+        }
         return context.getString(R.string.week) + " " + summary.getWeekOfYear() + " " + summary.getYear();
     }
 
@@ -135,20 +157,23 @@ public class Utility {
     }
 
     public static String getTitleFromSummary(Context context, SessionsSummary summary) {
-        if (summary instanceof DailySessionsSummary) {
-            return context.getString(R.string.daily_summary);
-        } else if (summary instanceof WeeklySessionsSummary) {
-            return context.getString(R.string.weekly_summary);
-        } else if (summary instanceof MonthlySessionsSummary) {
-            return context.getString(R.string.monthly_summary);
-        } else if (summary instanceof YearlySessionsSummary) {
-            return context.getString(R.string.yearly_summary);
+        if (context != null) {
+            if (summary instanceof DailySessionsSummary) {
+                return context.getString(R.string.daily_summary);
+            } else if (summary instanceof WeeklySessionsSummary) {
+                return context.getString(R.string.weekly_summary);
+            } else if (summary instanceof MonthlySessionsSummary) {
+                return context.getString(R.string.monthly_summary);
+            } else if (summary instanceof YearlySessionsSummary) {
+                return context.getString(R.string.yearly_summary);
+            }
         }
+
         return "";
     }
 
     public static String getDayName(Context context, SessionsSummary summary) {
-        if (summary instanceof DailySessionsSummary) {
+        if (context != null && summary instanceof DailySessionsSummary) {
             Calendar cal = getCalendarFromDailySessionsSummary((DailySessionsSummary) summary);
             Calendar current = Calendar.getInstance();
 
