@@ -101,6 +101,10 @@ public class SessionsSummary {
         return "";
     }
 
+    public String createKey() {
+        return String.valueOf(createPriority());
+    }
+
     public Long createPriority() {
         String prio = createPeriodString();
         prio = prio.replaceAll("\\D+", "");
