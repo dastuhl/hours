@@ -351,7 +351,11 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
 
         }
 
-        String total = Utility.getDurationString(summary.computeTotal());
+        int total = summary.computeTotal();
+        String totalString = "";
+        if (total > 0) {
+            totalString = Utility.getDurationString(total);
+        }
 
         PieDataSet dataset = new PieDataSet(yVals1, getString(R.string.timeShare));
         dataset.setColors(chartColors);
@@ -366,7 +370,7 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
         chart.highlightValues(null);
         chart.setCenterTextSize(20f);
         chart.setCenterTextTypeface(Typeface.DEFAULT_BOLD);
-        chart.setCenterText(total);
+        chart.setCenterText(totalString);
 
         chart.invalidate();
     }
