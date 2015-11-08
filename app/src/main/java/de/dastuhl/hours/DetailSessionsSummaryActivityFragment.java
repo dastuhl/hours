@@ -220,20 +220,36 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
     }
 
     private void openDialog(int dialogId) {
+        int minutes = 0;
+        boolean timePicker = false;
         switch (dialogId) {
             case DATE_DIALOG:
-                DialogFragment dateFragment = new DatePickerFragment();
+                DialogFragment dateFragment = DatePickerFragment.newInstance(
+                        ((DailySessionsSummary) summary).buildCalendar());
                 dateFragment.setTargetFragment(this, dialogId);
                 dateFragment.show(getActivity().getSupportFragmentManager(), TAG_DATE_PICKER_DIALOG);
                 break;
             case TIME_DIALOG_ATHLETIC:
-            case TIME_DIALOG_CYCLE:
-            case TIME_DIALOG_RUN:
-            case TIME_DIALOG_SWIM:
-                DialogFragment timeFragment = new TimePickerFragment();
-                timeFragment.setTargetFragment(this, dialogId);
-                timeFragment.show(getActivity().getSupportFragmentManager(), TAG_TIME_PICKER_DIALOG);
+                minutes = summary.getAthleticDuration();
+                timePicker = true;
                 break;
+            case TIME_DIALOG_CYCLE:
+                minutes = summary.getCycleDuration();
+                timePicker = true;
+                break;
+            case TIME_DIALOG_RUN:
+                minutes = summary.getRunDuration();
+                timePicker = true;
+                break;
+            case TIME_DIALOG_SWIM:
+                minutes = summary.getSwimDuration();
+                timePicker = true;
+                break;
+        }
+        if (timePicker) {
+            DialogFragment timeFragment = TimePickerFragment.newInstance(minutes);
+            timeFragment.setTargetFragment(this, dialogId);
+            timeFragment.show(getActivity().getSupportFragmentManager(), TAG_TIME_PICKER_DIALOG);
         }
     }
 
@@ -377,10 +393,28 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
 
     public static class TimePickerFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
 
+        public static TimePickerFragment newInstance(int minutes) {
+            TimePickerFragment fragment = new TimePickerFragment();
+            Bundle args = new Bundle();
+            int hours = minutes / 60;
+            int mins = minutes % 60;
+            args.putInt("hours", hours);
+            args.putInt("minutes", mins);
+            fragment.setArguments(args);
+            return fragment;
+        }
+
         @Override
         public Dialog onCreateDialog(@NonNull Bundle savedInstanceState) {
+            int hours = 0;
+            int minutes = 0;
+            Bundle args = getArguments();
+            if (args != null && args.containsKey("hours") && args.containsKey("minutes")) {
+                hours = args.getInt("hours");
+                minutes = args.getInt("minutes");
+            }
             // Create a new instance of TimePickerDialog and return it
-            return new TimePickerDialog(getActivity(), this, 0, 0,
+            return new TimePickerDialog(getActivity(), this, hours, minutes,
                     DateFormat.is24HourFormat(getActivity()));
         }
 
@@ -397,13 +431,30 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
     public static class DatePickerFragment extends DialogFragment
             implements DatePickerDialog.OnDateSetListener {
 
+        public static DatePickerFragment newInstance(Calendar cal) {
+            DatePickerFragment fragment = new DatePickerFragment();
+            Bundle args = new Bundle();
+            args.putInt("year", cal.get(Calendar.YEAR));
+            args.putInt("month", cal.get(Calendar.MONTH));
+            args.putInt("day", cal.get(Calendar.DAY_OF_MONTH));
+            fragment.setArguments(args);
+            return fragment;
+        }
+
         @Override
         public Dialog onCreateDialog(@NonNull Bundle savedInstanceState) {
+            Calendar initialDate = Calendar.getInstance();
+            Bundle args = getArguments();
+            if (args != null && args.containsKey("year")
+                    && args.containsKey("month") && args.containsKey("day")) {
+                initialDate.set(Calendar.YEAR, args.getInt("year"));
+                initialDate.set(Calendar.MONTH, args.getInt("month"));
+                initialDate.set(Calendar.DAY_OF_MONTH, args.getInt("day"));
+            }
             // Use the current date as the default date in the picker
-            final Calendar c = Calendar.getInstance();
-            int year = c.get(Calendar.YEAR);
-            int month = c.get(Calendar.MONTH);
-            int day = c.get(Calendar.DAY_OF_MONTH);
+            int year = initialDate.get(Calendar.YEAR);
+            int month = initialDate.get(Calendar.MONTH);
+            int day = initialDate.get(Calendar.DAY_OF_MONTH);
 
             // Create a new instance of DatePickerDialog and return it
             return new DatePickerDialog(getActivity(), this, year, month, day);
