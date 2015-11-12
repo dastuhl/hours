@@ -128,5 +128,7 @@
     <string name="weekly_summary">weekly summary</string>
     <string name="yearly_summary">yearly summary</string>
     <string name="yesterday">Yesterday</string>
+    <string name="sports">sports</string>
+    <string name="percent">percents</string>
 
 </resources>

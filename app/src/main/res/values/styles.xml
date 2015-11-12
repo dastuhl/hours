@@ -13,6 +13,7 @@
     <style name="ActionBar.Solid.Hours.NotTitle" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
         <item name="displayOptions">useLogo|showHome</item>
         <item name="logo">@drawable/ic_history_white_48dp</item>
+        <item name="elevation">0dp</item>
     </style>
 
 </resources>
