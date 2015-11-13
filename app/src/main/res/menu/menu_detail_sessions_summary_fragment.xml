@@ -10,18 +10,10 @@
 
     <item
         android:id="@+id/menu_chart_type"
-        android:icon="@drawable/ic_assessment_white_48dp"
+        android:icon="@drawable/ic_equalizer_white_48dp"
         android:orderInCategory="200"
         app:showAsAction="ifRoom"
         android:title="@string/done">
-        <menu>
-            <item
-                android:id="@+id/percent_chart"
-                android:title="@string/percent" />
-            <item
-                android:id="@+id/sport_chart"
-                android:title="@string/sports" />
-        </menu>
     </item>
 
 </menu>

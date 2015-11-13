@@ -25,7 +25,12 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
@@ -40,6 +45,7 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import de.dastuhl.hours.chart.TimeFormatter;
 import de.dastuhl.hours.data.HoursFirebaseConnector;
 import de.dastuhl.hours.data.model.DailySessionsSummary;
 import de.dastuhl.hours.data.model.SessionsSummary;
@@ -97,7 +103,10 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
     TextView durationAthleticText;
 
     @Bind(R.id.details_pie_chart_view)
-    PieChart chart;
+    PieChart pieChart;
+
+    @Bind(R.id.details_bar_chart_view)
+    BarChart barChart;
 
     @Bind(R.id.swim_button)
     ImageButton swimButton;
@@ -137,6 +146,9 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
         editMode = EditMode.SHOW;
 
         definePieChart();
+        defineBarChart();
+        // default invisible
+        barChart.setVisibility(View.GONE);
 
         // TODO args set?
         Bundle args = getArguments();
@@ -178,6 +190,19 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
             case R.id.menu_action_done:
                 firebaseConnector.saveDailySummary((DailySessionsSummary) summary);
                 getActivity().finish();
+                return true;
+            case R.id.menu_chart_type:
+                if (pieChart.getVisibility() == View.VISIBLE) {
+                    item.setIcon(R.drawable.ic_data_usage_white_48dp);
+                    pieChart.setVisibility(View.GONE);
+                    barChart.setVisibility(View.VISIBLE);
+                } else {
+                    item.setIcon(R.drawable.ic_equalizer_white_48dp);
+                    pieChart.setVisibility(View.VISIBLE);
+                    barChart.setVisibility(View.GONE);
+                }
+
+
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -315,7 +340,8 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
         runButton.setEnabled(editMode.isEditable());
         athleticButton.setEnabled(editMode.isEditable());
 
-        addChartData();
+        addPieChartData();
+        addBarChartData();
     }
 
     private void changeTitle() {
@@ -329,15 +355,23 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
     }
 
     private void definePieChart() {
-        chart.setUsePercentValues(true);
-        chart.setDescription("");
-        chart.setDrawHoleEnabled(true);
-        chart.setHoleColorTransparent(true);
-        chart.getLegend().setEnabled(false);
-        chart.setClickable(false);
+        pieChart.setUsePercentValues(true);
+        pieChart.setDescription("");
+        pieChart.setDrawHoleEnabled(true);
+        pieChart.setHoleColorTransparent(true);
+        pieChart.getLegend().setEnabled(false);
+        pieChart.setClickable(false);
     }
 
-    private void addChartData() {
+    private void defineBarChart() {
+        barChart.setDescription("");
+        barChart.getLegend().setEnabled(false);
+        barChart.setClickable(false);
+        barChart.setDoubleTapToZoomEnabled(false);
+        barChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+    }
+
+    private void addPieChartData() {
         if (!isAdded()) {
             return;
         }
@@ -382,13 +416,39 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
         data.setValueTextSize(12f);
         data.setHighlightEnabled(false);
 
-        chart.setData(data);
-        chart.highlightValues(null);
-        chart.setCenterTextSize(20f);
-        chart.setCenterTextTypeface(Typeface.DEFAULT_BOLD);
-        chart.setCenterText(totalString);
+        pieChart.setData(data);
+        pieChart.highlightValues(null);
+        pieChart.setCenterTextSize(20f);
+        pieChart.setCenterTextTypeface(Typeface.DEFAULT_BOLD);
+        pieChart.setCenterText(totalString);
 
-        chart.invalidate();
+        pieChart.invalidate();
+    }
+
+    private void addBarChartData() {
+        if (!isAdded()) {
+            return;
+        }
+        List<Integer> colors = Utility.getSportsColors(getActivity());
+
+        BarEntry swimEntry = new BarEntry(summary.getSwimDuration(), 0);
+        BarEntry rideEntry = new BarEntry(summary.getCycleDuration(), 1);
+        BarEntry runEntry = new BarEntry(summary.getRunDuration(), 2);
+        BarEntry athleticEntry = new BarEntry(summary.getAthleticDuration(), 3);
+
+        BarDataSet dataSet = new BarDataSet(
+                Lists.newArrayList(swimEntry, rideEntry, runEntry, athleticEntry), "");
+        dataSet.setColors(colors);
+        dataSet.setValueFormatter(new TimeFormatter());
+
+        List<BarDataSet> dataSets = Lists.newArrayList(dataSet);
+        dataSet.setHighlightEnabled(false);
+
+        BarData data = new BarData(Lists.newArrayList(
+                getString(R.string.swimming), getString(R.string.cycling),
+                getString(R.string.running), getString(R.string.athletics)), dataSets);
+        barChart.setData(data);
+        barChart.invalidate();
     }
 
     public static class TimePickerFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {

@@ -130,5 +130,6 @@
     <string name="yesterday">Yesterday</string>
     <string name="sports">sports</string>
     <string name="percent">percents</string>
+    <string name="minutes">minutes</string>
 
 </resources>
