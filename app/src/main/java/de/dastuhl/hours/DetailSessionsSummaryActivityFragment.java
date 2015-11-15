@@ -326,9 +326,7 @@ public class DetailSessionsSummaryActivityFragment extends Fragment
 
     private void updateUI() {
         changeTitle();
-        String periodString = Utility.getDayName(getActivity(), summary);
-        dailySummaryDateText.setText(periodString + " "
-                + Utility.createFriendlyPeriodString(getActivity(), summary));
+        dailySummaryDateText.setText(Utility.createFriendlyPeriodString(getActivity(), summary, true));
         durationAthleticText.setText(Utility.getDurationString(summary.getAthleticDuration()));
         durationSwimmingText.setText(Utility.getDurationString(summary.getSwimDuration()));
         durationCyclingText.setText(Utility.getDurationString(summary.getCycleDuration()));

@@ -18,7 +18,9 @@ public class WeeklySessionsSummary extends CumulatedSessionsSummary {
     }
 
     public static WeeklySessionsSummary fromDailySessionsSummary(DailySessionsSummary dailySummary) {
-        return new WeeklySessionsSummary(dailySummary.getYear(), null, dailySummary.getWeekOfYear(), null,
+        int year = Utility.getYearForWeekOyYearPeriod(
+                dailySummary.getYear(), dailySummary.getMonth(), dailySummary.getWeekOfYear());
+        return new WeeklySessionsSummary(year, null, dailySummary.getWeekOfYear(), null,
                 dailySummary.getSwimDuration(), dailySummary.getCycleDuration(), dailySummary.getRunDuration(), dailySummary.getAthleticDuration());
     }
 

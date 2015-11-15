@@ -131,8 +131,8 @@ public class HoursFirebaseConnector {
     private void updateCumulations(int startYear, int endYear) {
         getUserDailySummaries()
                 .orderByChild(SessionsSummary.YEAR_PROPERTY)
-                .startAt(startYear)
-                .endAt(endYear)
+                .startAt(startYear - 1)
+                .endAt(endYear + 1)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {

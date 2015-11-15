@@ -56,7 +56,7 @@ public class SessionsSummaryViewAdapter extends FirebaseRecyclerViewAdapter<Sess
     @Override
     public void populateViewHolder(SessionListViewHolder pSessionListViewHolder, SessionsSummary pSessionsSummary) {
 
-        pSessionListViewHolder.date.setText(Utility.createFriendlyPeriodString(context, pSessionsSummary));
+        pSessionListViewHolder.date.setText(Utility.createFriendlyPeriodString(context, pSessionsSummary, false));
         pSessionListViewHolder.total.setText(Utility.getDurationString(pSessionsSummary.computeTotal()));
 
         if (Utility.getPreferredBarChartStyle(context)) {

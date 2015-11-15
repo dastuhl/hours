@@ -59,11 +59,12 @@ public class DailySessionsSummary extends SessionsSummary implements Comparable<
     }
 
     public String createKeyForMonthlySummary() {
-        return new StringBuilder().append(getYear()).append(getMonth()).toString();
+        return String.valueOf(getYear()) + getMonth();
     }
 
     public String createKeyForWeeklySummary() {
-        return new StringBuilder().append(getYear()).append(getWeekOfYear()).toString();
+        int year = Utility.getYearForWeekOyYearPeriod(getYear(), getMonth(), getWeekOfYear());
+        return String.valueOf(year) + getWeekOfYear();
     }
 
     public Calendar buildCalendar() {

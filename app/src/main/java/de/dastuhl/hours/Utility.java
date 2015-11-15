@@ -7,7 +7,6 @@ import android.support.annotation.NonNull;
 
 import com.google.common.collect.Lists;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
@@ -101,11 +100,12 @@ public class Utility {
         return Float.valueOf(value);
     }
 
-    public static String createFriendlyPeriodString(Context context, SessionsSummary summary) {
+    public static String createFriendlyPeriodString(
+            Context context, SessionsSummary summary, boolean longString) {
         if (summary instanceof DailySessionsSummary) {
-            return createFriendlyPeriodString((DailySessionsSummary) summary);
+            return createFriendlyPeriodString(context, (DailySessionsSummary) summary, longString);
         } else if (summary instanceof WeeklySessionsSummary) {
-            return createFriendlyPeriodString(context, (WeeklySessionsSummary) summary);
+            return createFriendlyPeriodString(context, (WeeklySessionsSummary) summary, longString);
         } else if (summary instanceof MonthlySessionsSummary) {
             return createFriendlyPeriodString((MonthlySessionsSummary) summary);
         } else if (summary instanceof YearlySessionsSummary) {
@@ -114,15 +114,18 @@ public class Utility {
         return "";
     }
 
-    public static String createFriendlyPeriodString(DailySessionsSummary summary) {
+    public static String createFriendlyPeriodString(Context context, DailySessionsSummary summary, boolean longString) {
 
         Calendar cal = getCalendarFromDailySessionsSummary(summary);
         String result;
 
-        DateFormat format = SimpleDateFormat.getDateInstance();
+        SimpleDateFormat format = new SimpleDateFormat("MMM/dd/yyyy", Locale.US);
         format.setTimeZone(cal.getTimeZone());
         result = format.format(cal.getTime());
 
+        if (longString) {
+            return getDayName(context, summary) + " " + result;
+        }
         return result;
     }
 
@@ -133,11 +136,28 @@ public class Utility {
         return cal;
     }
 
-    public static String createFriendlyPeriodString(Context context, WeeklySessionsSummary summary) {
+    public static String createFriendlyPeriodString(Context context, WeeklySessionsSummary summary,
+                                                    boolean longString) {
         if (context == null) {
             return "";
         }
-        return context.getString(R.string.week) + " " + summary.getWeekOfYear() + " " + summary.getYear();
+        Calendar cal = Calendar.getInstance();
+        cal.clear();
+        cal.setFirstDayOfWeek(Calendar.MONDAY);
+        cal.set(Calendar.WEEK_OF_YEAR, summary.getWeekOfYear());
+        cal.set(Calendar.YEAR, summary.getYear());
+        SimpleDateFormat format = new SimpleDateFormat("MMM/dd", Locale.US);
+        String begin = format.format(cal.getTime());
+        cal.add(Calendar.DAY_OF_WEEK, 6);
+        String end = format.format(cal.getTime());
+        if (longString) {
+            return context.getString(R.string.week) + " " + summary.getWeekOfYear()
+                    + " (" + begin + " - " + end + ") " + summary.getYear();
+        } else {
+            return context.getString(R.string.week) + " " + summary.getWeekOfYear()
+                    + " " + summary.getYear();
+        }
+
     }
 
     public static String createFriendlyPeriodString(MonthlySessionsSummary summary) {
@@ -145,7 +165,7 @@ public class Utility {
         cal.set(summary.getYear(), summary.getMonth() - 1, 1);
 
         String result;
-        SimpleDateFormat format = new SimpleDateFormat("MMM yyyy", Locale.getDefault());
+        SimpleDateFormat format = new SimpleDateFormat("MMM yyyy", Locale.US);
         format.setTimeZone(cal.getTimeZone());
         result = format.format(cal.getTime());
 
@@ -184,10 +204,22 @@ public class Utility {
                     return context.getString(R.string.yesterday);
                 }
             }
-            SimpleDateFormat format = new SimpleDateFormat("EEEE", Locale.getDefault());
+            SimpleDateFormat format = new SimpleDateFormat("EEEE", Locale.US);
             format.setTimeZone(cal.getTimeZone());
             return format.format(cal.getTime());
         }
         return "";
+    }
+
+    public static int getYearForWeekOyYearPeriod(int year, int month, int week) {
+        int result;
+        if (week == 53 && month == 1) {
+            result = year - 1;
+        } else if (week == 1 && month == 12) {
+            result = year + 1;
+        } else {
+            result = year;
+        }
+        return result;
     }
 }
