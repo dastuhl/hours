@@ -65,6 +65,7 @@ public class SessionsSummaryListActivityFragment extends Fragment
         ButterKnife.bind(this, rootView);
         sessionListView.setHasFixedSize(true);
         sessionListView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        sessionListView.addItemDecoration(new DividerItemDecoration(getActivity()));
 
         return rootView;
     }
