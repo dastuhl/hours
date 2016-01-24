@@ -6,7 +6,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.firebase.client.Firebase;
-import com.firebase.ui.FirebaseRecyclerViewAdapter;
+import com.firebase.ui.FirebaseRecyclerAdapter;
 import com.github.mikephil.charting.charts.HorizontalBarChart;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
@@ -27,7 +27,7 @@ import de.dastuhl.hours.data.model.YearlySessionsSummary;
 /**
  * Created by Martin on 24.09.2015.
  */
-public class SessionsSummaryViewAdapter extends FirebaseRecyclerViewAdapter<SessionsSummary, SessionsSummaryViewAdapter.SessionListViewHolder> {
+public class SessionsSummaryViewAdapter extends FirebaseRecyclerAdapter<SessionsSummary, SessionsSummaryViewAdapter.SessionListViewHolder> {
 
     Context context;
     SummarySelectionListener listener;
@@ -54,7 +54,7 @@ public class SessionsSummaryViewAdapter extends FirebaseRecyclerViewAdapter<Sess
     }
 
     @Override
-    public void populateViewHolder(SessionListViewHolder pSessionListViewHolder, SessionsSummary pSessionsSummary) {
+    protected void populateViewHolder(SessionListViewHolder pSessionListViewHolder, SessionsSummary pSessionsSummary, int i) {
 
         pSessionListViewHolder.date.setText(Utility.createFriendlyPeriodString(context, pSessionsSummary, false));
         pSessionListViewHolder.total.setText(Utility.getDurationString(pSessionsSummary.computeTotal()));
@@ -143,7 +143,7 @@ public class SessionsSummaryViewAdapter extends FirebaseRecyclerViewAdapter<Sess
         chart.invalidate();
     }
 
-    static class SessionListViewHolder extends android.support.v7.widget.RecyclerView.ViewHolder
+    public static class SessionListViewHolder extends android.support.v7.widget.RecyclerView.ViewHolder
             implements View.OnClickListener{
 
         SessionSummaryClick listener;
