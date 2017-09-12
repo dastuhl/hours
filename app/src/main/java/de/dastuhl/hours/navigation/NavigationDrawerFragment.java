@@ -130,7 +130,25 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerToggle = new ActionBarDrawerToggle(
                 getActivity(), mDrawerLayout,
                 R.string.navigation_drawer_open,
-                R.string.navigation_drawer_close);;
+                R.string.navigation_drawer_close) {
+
+            /**
+             * Called when a drawer has settled in a completely closed state.
+             */
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                adapter.notifyDataSetChanged();
+            }
+
+            /**
+             * Called when a drawer has settled in a completely open state.
+             */
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                adapter.notifyDataSetChanged();
+            }
+
+        };
 
         // Defer code dependent on restoration of previous instance state.
         mDrawerLayout.post(new Runnable() {
